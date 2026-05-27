@@ -24,6 +24,28 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+export const verifyOtpThunk = createAsyncThunk(
+  'auth/verifyOtp',
+  async ({ email, otp }, { rejectWithValue }) => {
+    try {
+      return await authService.verifyOtp(email, otp);
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Verification failed');
+    }
+  }
+);
+
+export const resendOtpThunk = createAsyncThunk(
+  'auth/resendOtp',
+  async (email, { rejectWithValue }) => {
+    try {
+      return await authService.resendOtp(email);
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to resend OTP');
+    }
+  }
+);
+
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (userData, { rejectWithValue }) => {
@@ -174,6 +196,30 @@ const authSlice = createSlice({
         state.loading = false;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Verify OTP
+      .addCase(verifyOtpThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(verifyOtpThunk.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(verifyOtpThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Resend OTP
+      .addCase(resendOtpThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resendOtpThunk.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(resendOtpThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

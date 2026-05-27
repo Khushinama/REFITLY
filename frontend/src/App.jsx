@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -75,6 +76,19 @@ const App = () => {
           />
         </Routes>
       </Router>
+      <Toaster 
+        position="top-center" 
+        toastOptions={{
+          style: {
+            background: '#ffffff',
+            color: '#1e3a40',
+            border: '1px solid #eae5de',
+            borderRadius: '12px',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
+            fontFamily: "'Inter', sans-serif"
+          }
+        }} 
+      />
       <ToastNotification />
     </>
   )

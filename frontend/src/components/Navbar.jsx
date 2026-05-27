@@ -4,6 +4,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
 import { Menu, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 import BrandLogo from './common/BrandLogo';
 
 function Navbar() {
@@ -22,6 +23,7 @@ function Navbar() {
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
+    toast.success('Logged out successfully');
   };
 
   return (

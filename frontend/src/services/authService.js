@@ -32,6 +32,16 @@ export const loginUser = async (data) => {
   return res.data;
 };
 
+export const verifyOtp = async (email, otp) => {
+  const res = await axios.post(`${API}/verify-otp`, { email, otp });
+  return res.data;
+};
+
+export const resendOtp = async (email) => {
+  const res = await axios.post(`${API}/resend-otp`, { email });
+  return res.data;
+};
+
 export const forgotPassword = async (email) => {
   const res = await axios.post(`${API}/forgot-password`, { email });
   return res.data;
@@ -70,6 +80,8 @@ export const deleteUserAccount = async () => {
 const authService = {
   registerUser,
   loginUser,
+  verifyOtp,
+  resendOtp,
   forgotPassword,
   resetPassword,
   fetchDashboardData,

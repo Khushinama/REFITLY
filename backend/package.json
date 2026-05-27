@@ -24,6 +24,7 @@
     "mongoose": "^9.3.3",
     "multer": "^2.1.1",
     "node-vibrant": "^3.2.1-alpha.1",
-    "nodemailer": "^8.0.4"
+    "nodemailer": "^8.0.4",
+    "validator": "^13.15.35"
   }
 }

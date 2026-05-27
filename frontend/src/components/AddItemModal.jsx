@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { addItem, updateItem, addOptimisticItem } from '../store/slices/wardrobeSlice';
 import { X, Upload, Check, AlertCircle, Loader2 } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
+import toast from 'react-hot-toast';
 
 const AddItemModal = ({ isOpen, onClose, onItemAdded, editItem = null }) => {
   const dispatch = useDispatch();
@@ -260,6 +261,7 @@ const AddItemModal = ({ isOpen, onClose, onItemAdded, editItem = null }) => {
 
       if (addItem.fulfilled.match(resultAction) || updateItem.fulfilled.match(resultAction)) {
         setSuccess(true);
+        toast.success(editItem ? 'Item updated successfully!' : 'Item added successfully!');
         if (resultAction.payload.detectedColor) {
           setDetectedColor(resultAction.payload.detectedColor);
         }
@@ -268,10 +270,13 @@ const AddItemModal = ({ isOpen, onClose, onItemAdded, editItem = null }) => {
           handleClose();
         }, 2000);
       } else {
-        setError(resultAction.payload || `Failed to ${editItem ? 'update' : 'add'} item.`);
+        const errorMsg = resultAction.payload || `Failed to ${editItem ? 'update' : 'add'} item.`;
+        setError(errorMsg);
+        toast.error(errorMsg);
       }
     } catch (err) {
       setError(`An unexpected error occurred. Please try again.`);
+      toast.error(`An unexpected error occurred. Please try again.`);
     } finally {
       setLoading(false);
     }

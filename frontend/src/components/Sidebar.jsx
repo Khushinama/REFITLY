@@ -1,6 +1,9 @@
-import { LayoutDashboard, Shirt, Sparkles, UserCircle, X, History } from 'lucide-react';
+import { LayoutDashboard, Shirt, Sparkles, UserCircle, X, History, LogOut } from 'lucide-react';
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '../store/slices/authSlice';
+import toast from 'react-hot-toast';
 import BrandLogo from './common/BrandLogo';
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -11,7 +14,16 @@ const Sidebar = ({ isOpen, onClose }) => {
     { label: 'History', icon: History, path: '/history' },
   ];
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+    toast.success('Logged out successfully');
+    if (onClose) onClose();
+  };
+
   const activeStyles = "bg-[rgba(129,166,198,0.14)] text-[#1A1A2E] font-medium border-l-2 border-[#81A6C6]";
   const inactiveStyles = "bg-transparent text-[#8A8A9A] hover:bg-[rgba(129,166,198,0.08)] hover:text-[#3D3D4E] hover:translate-x-[2px]";
 
@@ -96,6 +108,15 @@ const Sidebar = ({ isOpen, onClose }) => {
             <UserCircle size={16} className="text-[#8A8A9A] group-hover:text-[#81A6C6]" />
             <span>Profile</span>
           </NavLink>
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 mt-1 rounded-xl cursor-pointer transition-all duration-300 ease-out group bg-transparent text-[#8A8A9A] hover:bg-red-50 hover:text-red-600 hover:translate-x-[2px]"
+          >
+            <LogOut size={16} className="text-[#8A8A9A] group-hover:text-red-600 transition-colors duration-300" />
+            <span className="font-medium">Logout</span>
+          </button>
 
           {/* App Version */}
           <p className="text-[9px] tracking-widest text-[#8A8A9A] uppercase mt-4 px-3">

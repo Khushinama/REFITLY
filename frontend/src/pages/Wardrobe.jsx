@@ -6,6 +6,7 @@ import Topbar from '../components/Topbar';
 import WardrobeGrid from '../components/WardrobeGrid';
 import AddItemModal from '../components/AddItemModal';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
+import toast from 'react-hot-toast';
 
 const Wardrobe = () => {
   const dispatch = useDispatch();
@@ -38,7 +39,12 @@ const Wardrobe = () => {
   const confirmDelete = async () => {
     if (!selectedItem) return;
     setIsDeleteLoading(true);
-    await dispatch(deleteItem(selectedItem._id));
+    const actionResult = await dispatch(deleteItem(selectedItem._id));
+    if (deleteItem.fulfilled.match(actionResult)) {
+      toast.success('Item deleted successfully');
+    } else {
+      toast.error('Failed to delete item');
+    }
     setIsDeleteLoading(false);
     setIsDeleteModalOpen(false);
     setSelectedItem(null);

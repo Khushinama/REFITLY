@@ -1,28 +1,26 @@
 import { useState, useEffect } from "react";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, clearError } from "../store/slices/authSlice";
-import { forgotPassword } from "../services/authService";
+import { loginUser, clearError, forgotPasswordThunk } from "../store/slices/authSlice";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-
+import { Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
+import { Input } from "../components/Input";
+import { PasswordInput } from "../components/PasswordInput";
+import { validateEmail } from "../utils/validation";
 
 function Login() {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+  
+  const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, user, loading, error } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    if (params.get("verified") === "true") {
-      alert("Email verified successfully! You can now log in.");
-    }
-  }, [location]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -36,24 +34,48 @@ function Login() {
 
   useEffect(() => {
     if (error) {
-      alert(error);
+      toast.error(error);
       dispatch(clearError());
     }
   }, [error, dispatch]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+
+    if (name === "email") setErrors(prev => ({ ...prev, email: validateEmail(value) }));
+    if (name === "password") setErrors(prev => ({ ...prev, password: value ? "" : "Password is required" }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const emailErr = validateEmail(form.email);
+    const passErr = form.password ? "" : "Password is required";
+
+    if (emailErr || passErr) {
+      setErrors({ email: emailErr, password: passErr });
+      return;
+    }
+
     dispatch(loginUser(form));
   };
 
   const handleForgotPassword = async () => {
     if (!form.email) {
-      return alert("Enter email first");
+      setErrors(prev => ({ ...prev, email: "Please enter your email address first" }));
+      return toast.error("Please enter your email address first.");
+    }
+    
+    const emailErr = validateEmail(form.email);
+    if (emailErr) {
+      setErrors(prev => ({ ...prev, email: emailErr }));
+      return;
     }
 
     const resultAction = await dispatch(forgotPasswordThunk(form.email));
     if (forgotPasswordThunk.fulfilled.match(resultAction)) {
-      alert(resultAction.payload.message);
+      toast.success(resultAction.payload?.message || "Password reset email sent.");
     }
   };
 
@@ -67,7 +89,7 @@ function Login() {
       }}
     >
       {/* Palette Overlay */}
-      <div className="absolute inset-0 bg-primary-dark/50 z-0"></div>
+      <div className="absolute inset-0 bg-primary-dark/60 z-0 backdrop-blur-[2px]"></div>
 
 
       {/* Main Grid Layout */}
@@ -76,7 +98,7 @@ function Login() {
         <div className="flex flex-col justify-center items-center px-4 md:px-12 min-h-screen pt-24 md:pt-0">
           <div className="w-full max-w-[460px]">
             {/* Form Card */}
-            <div className="bg-beige-50 rounded-2xl shadow-2xl p-6 md:p-10 border border-beige-300">
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-10 border border-beige-300">
               <div className="mb-6 md:mb-8">
                 <h1 className="text-3xl md:text-4xl font-bold text-primary-dark mb-3 md:mb-4 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
                   Welcome Back
@@ -86,36 +108,32 @@ function Login() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email address"
-                    value={form.email}
-                    onChange={(e) =>
-                      setForm({ ...form, email: e.target.value.trim() })
-                    }
-                    className="w-full bg-white border border-beige-300 rounded-lg px-4 py-3 text-sm text-primary-dark placeholder:text-primary-dark/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                  />
-                </div>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="Email address"
+                  value={form.email}
+                  onChange={handleChange}
+                  error={errors.email}
+                  disabled={loading}
+                />
 
-                <div>
-                  <input
-                    type="password"
+                <div className="relative">
+                  <PasswordInput
                     name="password"
                     placeholder="Password"
                     value={form.password}
-                    onChange={(e) =>
-                      setForm({ ...form, password: e.target.value })
-                    }
-                    className="w-full bg-white border border-beige-300 rounded-lg px-4 py-3 text-sm text-primary-dark placeholder:text-primary-dark/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                    onChange={handleChange}
+                    error={errors.password}
+                    showStrength={false}
+                    disabled={loading}
                   />
                   <div className="flex justify-end mt-2">
                     <button
                       type="button"
                       onClick={handleForgotPassword}
-                       className="text-xs font-bold text-primary-dark hover:underline transition-all"
+                      className="text-xs font-bold text-primary-dark hover:underline transition-all"
                     >
                       Forgot password?
                     </button>
@@ -124,9 +142,10 @@ function Login() {
 
                  <button
                   type="submit"
-                  className="w-full bg-primary hover:bg-primary-hover text-[#1e3a40] font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95"
+                  disabled={loading}
+                  className="w-full flex justify-center items-center gap-2 bg-primary hover:bg-primary-hover text-[#1e3a40] font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  Sign In
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
                 </button>
               </form>
 

@@ -18,6 +18,7 @@ import {
   CheckCircle2, 
   AlertCircle 
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -92,9 +93,11 @@ const Profile = () => {
     if (updateUserProfile.fulfilled.match(resultAction)) {
       console.log("Profile Page - Update successful!");
       setShowSuccess(true);
+      toast.success("Profile updated successfully!");
       setTimeout(() => setShowSuccess(false), 4000);
     } else {
       console.error("Profile Page - Update failed:", resultAction.payload);
+      toast.error(resultAction.payload || "Failed to update profile");
     }
   };
 
