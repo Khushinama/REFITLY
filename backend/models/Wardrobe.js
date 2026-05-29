@@ -25,9 +25,8 @@ const wardrobeSchema = new mongoose.Schema(
     },
 
     season: {
-      type: String,
-      enum: ["Summer", "Winter", "All"],
-      default: "All",
+      type: mongoose.Schema.Types.Mixed, // Supports both String and Array
+      default: ["All"],
     },
 
     event: {
@@ -57,7 +56,11 @@ const wardrobeSchema = new mongoose.Schema(
     },
 
     vibe: {
-      type: String, // e.g., "casual", "professional", "elegant", "streetwear", "sporty"
+      type: mongoose.Schema.Types.Mixed, // e.g., "casual", or ["luxury", "professional"]
+      default: null,
+    },
+    accessoryType: {
+      type: String, // e.g., "watch", "handbag", "jewelry"
       default: null,
     },
 

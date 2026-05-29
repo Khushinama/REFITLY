@@ -53,6 +53,19 @@ export const wearOutfit = createAsyncThunk(
   }
 );
 
+export const removeHistoryEntry = createAsyncThunk(
+  'history/removeHistoryEntry',
+  async (id, { rejectWithValue, dispatch }) => {
+    try {
+      await historyService.deleteHistoryEntry(id);
+      dispatch(showToast({ message: 'Removed from Outfit History', type: 'success' }));
+      return id;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to remove history entry');
+    }
+  }
+);
+
 const historySlice = createSlice({
   name: 'history',
   initialState,
@@ -121,6 +134,19 @@ const historySlice = createSlice({
       .addCase(wearOutfit.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // removeHistoryEntry
+      .addCase(removeHistoryEntry.fulfilled, (state, action) => {
+        const id = action.payload;
+        state.historyOutfits = state.historyOutfits.filter(item => item._id !== id);
+        Object.keys(state.calendarHistory).forEach(dateKey => {
+          if (state.calendarHistory[dateKey]) {
+            state.calendarHistory[dateKey] = state.calendarHistory[dateKey].filter(item => item._id !== id);
+            if (state.calendarHistory[dateKey].length === 0) {
+              delete state.calendarHistory[dateKey];
+            }
+          }
+        });
       });
   }
 });

@@ -154,6 +154,50 @@ const Dashboard = () => {
     ];
   }, [bodyType, userPreferences]);
 
+  // Dynamic Style Score logic
+  const dynamicStyleScore = useMemo(() => {
+    if (!wardrobeItems || wardrobeItems.length === 0) return 0;
+    
+    // If no preferences set, calculate a base variety score
+    if (!userPreferences || userPreferences.length === 0) {
+      const categories = new Set(wardrobeItems.map(i => i.category));
+      let score = 50;
+      if (categories.has('top')) score += 10;
+      if (categories.has('bottom')) score += 10;
+      if (categories.has('footwear')) score += 10;
+      if (categories.has('accessory')) score += 10;
+      if (categories.has('layer')) score += 10;
+      return Math.min(score, 98);
+    }
+
+    // Convert preferences to lowercase strings and strip "ist" (Minimalist -> minimal) for broader matching
+    const preferred = userPreferences.map(p => p.toLowerCase().replace('ist', ''));
+    
+    let matchCount = 0;
+    wardrobeItems.forEach(item => {
+      const tags = (item.styleTags || []).map(t => t.toLowerCase());
+      const vibes = Array.isArray(item.vibe) 
+        ? item.vibe.map(v => String(v).toLowerCase()) 
+        : (item.vibe ? [String(item.vibe).toLowerCase()] : []);
+        
+      const allKeywords = [...tags, ...vibes, (item.name || '').toLowerCase(), (item.category || '').toLowerCase()];
+      
+      const hasMatch = preferred.some(pref => 
+        allKeywords.some(kw => kw.includes(pref) || pref.includes(kw))
+      );
+      
+      if (hasMatch) {
+        matchCount++;
+      }
+    });
+
+    // Score calculation: 50% base + up to 50% based on match ratio
+    const matchRatio = matchCount / wardrobeItems.length;
+    let score = Math.round(50 + (matchRatio * 50));
+    
+    return Math.min(score, 98);
+  }, [wardrobeItems, userPreferences]);
+
   if (loading) {
     return (
       <div className="flex h-screen bg-[#F7F0E8] items-center justify-center">
@@ -207,7 +251,6 @@ const Dashboard = () => {
             <p className="text-[#8A8A9A] text-sm">Here's your style overview for today.</p>
           </section>
 
-          {/* Stats Grid */}
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
             <StatCard 
               label="Total Items" 
@@ -223,7 +266,7 @@ const Dashboard = () => {
             />
             <StatCard 
               label="Style Score" 
-              value="85%" 
+              value={`${dynamicStyleScore}%`} 
               icon={<TrendingUp className="w-5 h-5 text-[#81A6C6]" />} 
               delay="delay-300"
             />

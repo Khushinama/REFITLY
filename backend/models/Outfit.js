@@ -18,6 +18,8 @@ const outfitSchema = new mongoose.Schema(
     },
     reasons: [String],
     colorPalette: [String],
+    accessories: { type: Array, default: [] },
+    enhancementSuggestions: { type: Array, default: [] },
     signature: { type: String, required: true, index: true },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
   },

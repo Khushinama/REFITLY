@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchCalendarHistory } from '../store/slices/historySlice';
+import { fetchCalendarHistory, removeHistoryEntry } from '../store/slices/historySlice';
 import { fetchSavedOutfits, submitOutfitFeedback } from '../services/api/recommendationApi';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
@@ -105,6 +105,14 @@ const HistoryPage = () => {
     setIsFeedbackProcessing(true);
     try {
       const targetOutfit = selectedOutfit;
+
+      if (feedbackType === 'dislike' && targetOutfit?.historyEntryId) {
+        await dispatch(removeHistoryEntry(targetOutfit.historyEntryId)).unwrap();
+        setSelectedOutfit(null);
+        setIsFeedbackProcessing(false);
+        return;
+      }
+
       if (targetOutfit && targetOutfit.id === outfitId) {
         let nextOutfit = { ...targetOutfit };
         if (feedbackType === 'like') {
@@ -643,7 +651,10 @@ const HistoryPage = () => {
                                 onClick={() => {
                                   const outfitWithReasons = {
                                     ...outfitObj,
-                                    reasons: item.reasons || outfitObj?.reasons || outfitObj?.whyReasons || []
+                                    reasons: item.reasons || outfitObj?.reasons || outfitObj?.whyReasons || [],
+                                    accessories: item.accessories || outfitObj?.accessories || [],
+                                    enhancementSuggestions: item.enhancementSuggestions || outfitObj?.enhancementSuggestions || [],
+                                    historyEntryId: item._id
                                   };
                                   setSelectedOutfit(syncSavedState([outfitWithReasons], savedOutfits)[0]);
                                   setSelectedEvent(eventName);
@@ -697,6 +708,7 @@ const HistoryPage = () => {
           onClose={() => setSelectedOutfit(null)} 
           onFeedback={handleModalFeedback}
           isProcessing={isFeedbackProcessing}
+          isHistoryView={true}
         />
       )}
     </div>

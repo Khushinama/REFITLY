@@ -11,6 +11,7 @@ import { normalizeWardrobeItem } from "../utils/normalizeWardrobeItem.js";
 import { validateOutfitCompatibility } from "../utils/scoring/validateOutfitCompatibility.js";
 import { calculateOutfitMood } from "../utils/helpers/calculateOutfitMood.js";
 import { calculateOutfitDiversity } from "../utils/scoring/calculateOutfitDiversity.js";
+import { matchAccessories } from "../utils/accessoryMatcher.js";
 
 /**
  * Main function to generate personalized outfit recommendations.
@@ -48,6 +49,7 @@ export async function generateOutfits(userId, options = {}) {
 
         // Normalize raw items using normalizeWardrobeItem to guarantee the vibe property exists
         const wardrobeItems = rawWardrobeItems.map(item => normalizeWardrobeItem(item.toObject ? item.toObject() : item));
+        const userAccessories = wardrobeItems.filter(item => item.category === "accessory");
 
         // STEP 3 — Pre-filter Items (Diversity/Availability filter)
         const groups = filterAndGroupItems(wardrobeItems, {
@@ -171,6 +173,10 @@ export async function generateOutfits(userId, options = {}) {
                 },
                 colorPalette: [...new Set(colorPalette)].slice(0, 5)
             };
+
+            const accessoryMatch = matchAccessories(serializedItems, userAccessories, { event, style, season });
+            outfitResult.accessories = accessoryMatch.matchedAccessories;
+            outfitResult.enhancementSuggestions = accessoryMatch.enhancementSuggestions;
 
             // Attach dynamic, fashion-aware reasons
             outfitResult.whyReasons = generateOutfitReasons({

@@ -51,11 +51,21 @@ export const fetchHistoryByDate = async (date) => {
   return response.data;
 };
 
+/**
+ * Delete outfit history entry
+ * @param {string} id - History Entry ID
+ */
+export const deleteHistoryEntry = async (id) => {
+  const response = await axios.delete(`${API_URL}/${id}`, getAuthConfig());
+  return response.data;
+};
+
 const historyService = {
   wearOutfit,
   fetchHistory,
   fetchCalendarHistory,
   fetchHistoryByDate,
+  deleteHistoryEntry,
 };
 
 export default historyService;

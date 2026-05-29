@@ -153,47 +153,53 @@ export const calculateOutfitScore = (items, options = {}) => {
     let styleMatchCount = 0;
     let styleMismatchCount = 0;
 
-    activeItems.forEach(item => {
-        const itemTags = (item.styleTags || []).map(t => t.toLowerCase());
+    if (requestedStyles.length === 0) {
+        // If no specific style is requested, it matches the criteria perfectly
+        styleScore = 30;
+    } else {
+        activeItems.forEach(item => {
+            const itemTags = (item.styleTags || []).map(t => t.toLowerCase());
 
-        const matches = itemTags.filter(tag => requestedStyles.includes(tag));
-        if (matches.length > 0) {
-            styleMatchCount++;
-            styleScore += 10;
-        }
-
-        // Specific style rules
-        requestedStyles.forEach(reqS => {
-            const nameLower = item.name?.toLowerCase() || "";
-            const colorLower = item.color?.toLowerCase() || "";
-            const patternLower = item.pattern?.toLowerCase() || "";
-
-            // Minimal Style Match
-            if (reqS === "minimal") {
-                const isNeutral = NEUTRALS.includes(colorLower);
-                const isSolid = patternLower === "solid" || !patternLower;
-                if (isNeutral && isSolid) {
-                    styleScore += 4;
-                } else if (patternLower === "printed" || patternLower === "floral") {
-                    styleMismatchCount++;
-                }
+            const matches = itemTags.filter(tag => requestedStyles.includes(tag));
+            if (matches.length > 0) {
+                styleMatchCount++;
+                styleScore += 10;
             }
 
-            // Trendy Style Match
-            if (reqS === "trendy") {
-                if (itemTags.includes("streetwear") || itemTags.includes("bohemian") || nameLower.includes("crop") || nameLower.includes("neon")) {
-                    styleScore += 4;
+            // Specific style rules
+            requestedStyles.forEach(reqS => {
+                const nameLower = item.name?.toLowerCase() || "";
+                const colorLower = item.color?.toLowerCase() || "";
+                const patternLower = item.pattern?.toLowerCase() || "";
+
+                // Minimal Style Match
+                if (reqS === "minimal") {
+                    const isNeutral = NEUTRALS.includes(colorLower);
+                    const isSolid = patternLower === "solid" || !patternLower;
+                    if (isNeutral && isSolid) {
+                        styleScore += 4;
+                    } else if (patternLower === "printed" || patternLower === "floral") {
+                        styleMismatchCount++;
+                    }
                 }
-            }
+
+                // Trendy Style Match
+                if (reqS === "trendy") {
+                    if (itemTags.includes("streetwear") || itemTags.includes("bohemian") || nameLower.includes("crop") || nameLower.includes("neon")) {
+                        styleScore += 4;
+                    }
+                }
+            });
         });
-    });
 
-    let baseStyleScore = (styleMatchCount / activeItems.length) * 30;
-    styleScore = baseStyleScore + styleScore;
+        let baseStyleScore = (styleMatchCount / activeItems.length) * 30;
+        styleScore = baseStyleScore + styleScore;
 
-    if (styleMismatchCount > 0) {
-        styleScore -= (styleMismatchCount * 10);
+        if (styleMismatchCount > 0) {
+            styleScore -= (styleMismatchCount * 10);
+        }
     }
+
     styleScore = Math.max(-15, Math.min(30, styleScore));
 
     // 🚨 Strict Style Matching: Classy (Issue 2, Section 3)

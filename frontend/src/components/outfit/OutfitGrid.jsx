@@ -11,8 +11,8 @@ const OutfitGrid = ({
   onCardClick,
   lastElementRef 
 }) => {
-  // Grid container styles for Pinterest-style vertical flow
-  const gridClasses = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-start max-w-[1200px] mx-auto w-full px-4 sm:px-0";
+  // Grid container styles for wider premium cards
+  const gridClasses = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 items-start max-w-[1300px] mx-auto w-full px-4 sm:px-0";
 
   if (loading && outfits.length === 0) {
     return (

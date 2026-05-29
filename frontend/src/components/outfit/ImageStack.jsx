@@ -37,28 +37,28 @@ const ImageStack = ({ items, variant = 'grid' }) => {
 
   // Default: Top + Bottom + Shoes
   return (
-    <div className="flex flex-col gap-1.5 h-full">
-      <div className="flex-[2] grid grid-cols-2 gap-1.5 min-h-0">
+    <div className="flex flex-col gap-2 h-full">
+      <div className="flex-[0.9] grid grid-cols-2 gap-2 min-h-0">
         {renderItem(top, "h-full")}
         {renderItem(bottom, "h-full")}
       </div>
-      {renderItem(shoes, "flex-[1] min-h-0")}
+      {renderItem(shoes, "flex-[1.1] min-h-0")}
     </div>
   );
 };
 
 const ItemImage = ({ item, variant, className }) => {
-  if (!item) return <div className={`bg-[#F1F0E8] rounded-xl ${className}`} />;
+  if (!item) return <div className={`bg-gray-50 rounded-2xl ${className}`} />;
   
   return (
-    <div className={`relative group overflow-hidden rounded-xl bg-white ${className}`}>
+    <div className={`relative group overflow-hidden rounded-2xl bg-gray-50 ${className}`}>
       <img
         src={item.image || item.imageUrl || item.url || ''}
         alt={item.category || 'clothes'}
-        className={`w-full h-full ${variant === 'modal' ? 'object-contain p-2' : 'object-cover'} transition-transform duration-700 group-hover:scale-110`}
+        className={`w-full h-full object-contain p-2 transition-transform duration-700 group-hover:scale-105`}
         loading="lazy"
       />
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black-[0.02] transition-colors duration-300" />
     </div>
   );
 };

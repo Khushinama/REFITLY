@@ -34,6 +34,20 @@ export const addOutfitHistory = async (req, res) => {
                 signature: outfitId,
                 userId: req.user._id
             });
+        } else if (outfit && outfit.accessories && outfit.accessories.length > 0) {
+            // Update existing outfit doc with new accessories/suggestions if provided
+            let isUpdated = false;
+            if (!outfitDoc.accessories || outfitDoc.accessories.length === 0 || outfit.accessories.length > 0) {
+                outfitDoc.accessories = outfit.accessories;
+                isUpdated = true;
+            }
+            if (outfit.enhancementSuggestions) {
+                outfitDoc.enhancementSuggestions = outfit.enhancementSuggestions;
+                isUpdated = true;
+            }
+            if (isUpdated) {
+                await outfitDoc.save();
+            }
         }
 
         // 2. Normalize today's date to UTC midnight
@@ -268,6 +282,31 @@ export const getOutfitHistoryCalendar = async (req, res) => {
             success: true,
             data: grouped
         });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Server Error",
+            error: error.message
+        });
+    }
+};
+
+/**
+ * @desc    Delete outfit history entry
+ * @route   DELETE /api/history/:id
+ * @access  Private
+ */
+export const deleteOutfitHistory = async (req, res) => {
+    try {
+        const historyEntry = await OutfitHistory.findById(req.params.id);
+        if (!historyEntry) {
+            return res.status(404).json({ success: false, message: 'History entry not found' });
+        }
+        if (historyEntry.user.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ success: false, message: 'Not authorized' });
+        }
+        await historyEntry.deleteOne();
+        res.status(200).json({ success: true, message: 'History entry removed' });
     } catch (error) {
         res.status(500).json({
             success: false,

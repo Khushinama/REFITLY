@@ -79,67 +79,83 @@ const OutfitCard = React.memo(({
       onClick={readOnly ? undefined : () => onClick && onClick(outfit)}
     >
 
-      {/* Match Score Badge */}
-      <div className="absolute top-4 left-4 z-20 transition-transform group-hover:scale-110">
-        <MatchScoreBadge score={outfit.score} />
-      </div>
-
-      {/* Action Buttons (Hidden in readOnly mode) */}
-      {!readOnly && (
-        <div 
-          className="absolute top-3 right-3 z-20 flex flex-col gap-2"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <ActionButtons 
-            outfitId={outfit.id} 
-            onFeedback={onFeedback} 
-            isProcessing={isProcessing}
-            isLiked={outfit.isLiked}
-            isSaved={outfit.isSaved}
-            variant="floating"
-            showDelete={false}
-          />
-        </div>
-      )}
-
       {/* Image Section */}
-      <div className="relative aspect-[3/4] mb-4 overflow-hidden rounded-2xl bg-[#FBF9F6]">
+      <div className="relative aspect-square mb-3 overflow-hidden rounded-2xl bg-white">
+        
+        {/* Match Score Badge (Floating over image) */}
+        <div className="absolute top-3 left-3 z-20 transition-transform group-hover:scale-105">
+          <MatchScoreBadge score={outfit.score} />
+        </div>
+
+        {/* Action Buttons (Floating over image) */}
+        {!readOnly && (
+          <div 
+            className="absolute top-3 right-3 z-20 flex flex-col gap-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ActionButtons 
+              outfitId={outfit.id} 
+              onFeedback={onFeedback} 
+              isProcessing={isProcessing}
+              isLiked={outfit.isLiked}
+              isSaved={outfit.isSaved}
+              variant="floating"
+              showDelete={false}
+            />
+          </div>
+        )}
+
         <ImageStack items={outfit.items} variant="grid" />
       </div>
 
       {/* Content */}
       <div className="px-1 flex flex-col flex-grow">
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <h3 className={`font-playfair text-lg font-bold text-[#1A1A2E] leading-tight transition-colors line-clamp-1 ${
+        <div className="flex items-center gap-3 mb-3">
+          <h3 className={`font-playfair text-xl font-bold text-[#1A1A2E] leading-tight transition-colors line-clamp-1 ${
             readOnly ? '' : 'group-hover:text-[#81A6C6]'
           }`}>
             {outfitName}
           </h3>
 
-          <div className="flex-shrink-0 pt-1">
+          <div className="flex items-center gap-1.5 ml-auto">
             <ColorPalette colors={outfit.colorPalette} />
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="mt-auto flex items-center justify-between">
-          <div className="flex gap-2">
-            <span className="px-2.5 py-1 rounded-lg bg-[rgba(129,166,198,0.08)] text-[9px] font-bold text-[#81A6C6] uppercase tracking-wider">
-              {event}
+        {/* Tags */}
+        <div className="flex gap-2 mb-2">
+          <span className="px-3 py-1 rounded-full bg-[#F0F4F8] text-[9px] font-bold text-[#81A6C6] uppercase tracking-wider">
+            {event || 'Casual'}
+          </span>
+          {outfit.items?.top?.styleTags?.slice(0, 1).map((tag, i) => (
+            <span 
+              key={i} 
+              className="px-3 py-1 rounded-full bg-[#F0F4F8] text-[9px] font-bold text-[#81A6C6] uppercase tracking-wider"
+            >
+              {tag}
             </span>
-
-            {outfit.items?.top?.styleTags?.slice(0, 1).map((tag, i) => (
-              <span 
-                key={i} 
-                className="px-2.5 py-1 rounded-lg bg-gray-50 text-[9px] font-bold text-[#8A8A9A] uppercase tracking-wider"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+          ))}
         </div>
 
-        {/* Wear Today Button (Hidden in readOnly mode) */}
+        {/* Styling Teaser Section (Clickable) */}
+        {!readOnly && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onClick) onClick(outfit);
+            }}
+            className="mt-2 pt-3 border-t border-[rgba(180,165,148,0.15)] flex flex-col text-left group/teaser transition-all w-full"
+          >
+            <h4 className="text-xs font-bold text-[#1A1A2E] flex items-center gap-2 mb-1.5 group-hover/teaser:text-[#81A6C6] transition-colors">
+              <span className="text-[#F5A623]">✨</span> Click to view & enhance outfit <span className="ml-auto opacity-0 group-hover/teaser:opacity-100 transition-opacity">→</span>
+            </h4>
+            <p className="text-[10px] text-[#8A8A9A] leading-relaxed pl-5">
+              View matching accessories from your wardrobe and get AI suggestions to complete your look.
+            </p>
+          </button>
+        )}
+
+        {/* Wear Today Button */}
         {!readOnly && (
           <div className="mt-4 w-full">
             <button

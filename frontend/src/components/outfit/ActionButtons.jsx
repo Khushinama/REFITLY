@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Heart, Bookmark, Trash2 } from 'lucide-react';
+import DeleteConfirmationModal from '../DeleteConfirmationModal';
 
 const ActionButtons = ({ 
   outfitId, 
@@ -11,13 +12,26 @@ const ActionButtons = ({
   showDelete = true
 }) => {
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const handleClick = (e, type) => {
     e.stopPropagation();
+    
+    if (type === 'dislike') {
+      setIsDeleteModalOpen(true);
+      return;
+    }
+
     onFeedback(outfitId, type);
 
     if (window.navigator?.vibrate) {
       window.navigator.vibrate(50);
     }
+  };
+
+  const handleConfirmDelete = () => {
+    onFeedback(outfitId, 'dislike');
+    setIsDeleteModalOpen(false);
   };
 
   // 🔥 Updated compact button style
@@ -26,10 +40,11 @@ const ActionButtons = ({
     : 'flex items-center gap-2 px-6 py-3 rounded-2xl border border-gray-100 hover:bg-gray-50 transition-all';
 
   return (
-    // 🔥 Vertical layout (IMPORTANT FIX)
-    <div className={`flex ${variant === 'floating' ? 'flex-col items-center' : 'flex-row'} gap-2`}>
-      
-      {/* ❤️ LIKE */}
+    <>
+      {/* 🔥 Vertical layout (IMPORTANT FIX) */}
+      <div className={`flex ${variant === 'floating' ? 'flex-col items-center' : 'flex-row'} gap-2`}>
+        
+        {/* ❤️ LIKE */}
       <button 
         onClick={(e) => handleClick(e, 'like')}
         className={`${btnClass} group`}
@@ -81,6 +96,16 @@ const ActionButtons = ({
       )}
 
     </div>
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Remove Outfit?"
+        message="Are you sure you want to remove this outfit from your history? This action cannot be undone."
+        loading={typeof isProcessing === 'function' ? isProcessing(outfitId, 'dislike') : isProcessing}
+      />
+    </>
   );
 };
 
