@@ -15,7 +15,6 @@ import {
   Calendar, 
   X, 
   Info, 
-  Sparkles, 
   Heart, 
   TrendingUp, 
   Activity, 
@@ -673,7 +672,7 @@ const HistoryPage = () => {
                   // FALLBACK PLACEHOLDER: No outfits worn on selected day
                   <div className="bg-white/40 border border-dashed border-[rgba(180,165,148,0.25)] rounded-[32px] p-8 h-full flex flex-col items-center justify-center text-center gap-6 min-h-[500px]">
                     <div className="w-16 h-16 rounded-full bg-[#EAE3D9]/60 flex items-center justify-center border border-[rgba(180,165,148,0.15)] shadow-sm">
-                      <Sparkles className="w-8 h-8 text-[#81A6C6]" />
+                      
                     </div>
 
                     <div className="space-y-2 max-w-sm">

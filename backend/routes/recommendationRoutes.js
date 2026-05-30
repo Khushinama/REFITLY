@@ -1,5 +1,5 @@
 import express from "express";
-import { getRecommendations, saveFeedback, getSavedOutfits } from "../controllers/recommendationController.js";
+import { getRecommendations, saveFeedback, getSavedOutfits, getTodayRecommendation, getAccessoryImage } from "../controllers/recommendationController.js";
 import protect from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -24,5 +24,19 @@ router.post("/feedback", protect, saveFeedback);
  * @access  Private
  */
 router.get("/saved", protect, getSavedOutfits);
+
+/**
+ * @route   GET /api/recommendations/today
+ * @desc    Get today's AI powered outfit recommendation
+ * @access  Private
+ */
+router.get("/today", protect, getTodayRecommendation);
+
+/**
+ * @route   GET /api/recommendations/image
+ * @desc    Get an image for an accessory
+ * @access  Private
+ */
+router.get("/image", protect, getAccessoryImage);
 
 export default router;

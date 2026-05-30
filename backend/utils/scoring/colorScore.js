@@ -22,7 +22,7 @@ export const calculateColorScore = (items, user) => {
     const hasNeutral = colors.some(color => NEUTRALS.includes(color));
     if (hasNeutral) {
         score += 30;
-        reasons.push("Neutral tones create a balanced foundation ✨");
+        reasons.push("Neutral tones create a balanced foundation ");
     }
     
     // 2. Monochromatic (+25)
@@ -67,7 +67,7 @@ export const calculateColorScore = (items, user) => {
     const matchesSkinTone = colors.some(color => palette.includes(color));
     if (matchesSkinTone) {
         score += 10;
-        reasons.push("Colors picked to complement your skin tone ✨");
+        reasons.push("Colors picked to complement your skin tone ");
     }
     
     // Penalties

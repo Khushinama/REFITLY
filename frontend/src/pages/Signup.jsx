@@ -167,7 +167,7 @@ function Signup() {
                     <h1 className="text-3xl md:text-4xl font-bold text-primary-dark mb-3 md:mb-4 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
                       Create Account
                     </h1>
-                    <p className="text-sm text-[#1e3a40]/70 text-center">
+                    <p className="text-sm text-primary-dark/70 text-center">
                       Join thousands styling smarter
                     </p>
                   </div>
@@ -209,13 +209,13 @@ function Signup() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full flex items-center justify-center bg-primary hover:bg-primary-hover text-[#1e3a40] font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="w-full flex items-center justify-center bg-primary hover:bg-primary-hover text-white font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                       {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign Up"}
                     </button>
                   </form>
 
-                  <p className="text-center text-sm text-[#1e3a40]/70 mt-6">
+                  <p className="text-center text-sm text-primary-dark/70 mt-6">
                     Already have an account?{" "}
                     <Link
                       to="/login"
@@ -244,7 +244,7 @@ function Signup() {
                     <h1 className="text-3xl md:text-4xl font-bold text-primary-dark mb-3 md:mb-4 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
                       Verify Email
                     </h1>
-                    <p className="text-sm text-[#1e3a40]/70 text-center px-4">
+                    <p className="text-sm text-primary-dark/70 text-center px-4">
                       We've sent a 6-digit verification code to <br /><span className="font-semibold">{registeredEmail}</span>
                     </p>
                   </div>
@@ -268,7 +268,7 @@ function Signup() {
                     <button
                       type="submit"
                       disabled={loading || otp.join("").length < 6}
-                      className="w-full flex items-center justify-center bg-primary hover:bg-primary-hover text-[#1e3a40] font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="w-full flex items-center justify-center bg-primary hover:bg-primary-hover text-white font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                       {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Verify Account"}
                     </button>

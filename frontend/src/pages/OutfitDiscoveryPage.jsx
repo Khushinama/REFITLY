@@ -354,7 +354,7 @@ const OutfitDiscoveryPage = () => {
                   
                   {!hasMore && outfits.length > 0 && (
                      <div className="text-center py-20 text-[#8A8A9A] font-medium italic text-sm">
-                        You've found all the best matches for this vibe! ✨
+                        You've found all the best matches for this vibe! 
                      </div>
                   )}
                 </div>

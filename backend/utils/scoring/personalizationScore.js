@@ -138,7 +138,7 @@ export const calculatePersonalizationScore = (items, colorPalette, userProfile) 
 
     if (styleMatchCount > 0) {
         score += 15;
-        reasons.push("Matches your recently liked aesthetics ✨");
+        reasons.push("Matches your recently liked aesthetics ");
     }
     if (styleDislikeCount > 0) {
         score -= 25;

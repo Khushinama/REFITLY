@@ -10,7 +10,7 @@ export const EVENTS = [
 ];
 
 export const STYLES = [
-  { id: 'minimal', label: 'Minimal', emoji: '✨' },
+  { id: 'minimal', label: 'Minimal', emoji: '' },
   { id: 'classy', label: 'Classy', emoji: '👑' },
   { id: 'streetwear', label: 'Streetwear', emoji: '🛹' },
   { id: 'bohemian', label: 'Bohemian', emoji: '🌻' },

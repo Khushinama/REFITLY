@@ -4,11 +4,12 @@ import { fetchDashboard } from "../store/slices/authSlice";
 import { fetchWardrobe } from "../store/slices/wardrobeSlice";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
+import FullLookModal from "../components/FullLookModal";
+import recommendationApi from "../services/api/recommendationApi";
 import { 
   Shirt, 
   Tag, 
   Scan, 
-  Sparkles, 
   Clock, 
   ChevronRight,
   TrendingUp,
@@ -31,64 +32,7 @@ const STYLE_PREFERENCE_TIPS = {
   Formal: ["Choose structured and tailored fits", "Stick to polished and clean looks"]
 };
 
-// Structured Style Mapping Configuration
-const STYLE_MAPPING = {
-  Minimalist: {
-    title: "Minimalist Essentials",
-    description: "Clean lines and neutral tones for a refined everyday look.",
-    items: ["White Shirt", "Straight Denim", "Loafers"],
-    bodyTips: {
-      Rectangle: "Opt for structured fabrics to add subtle definition to your frame.",
-      Pear: "Balance your silhouette with sharp shoulders and streamlined bottoms.",
-      Hourglass: "Highlight your waist with well-fitted basics that follow your natural curve.",
-      "Inverted Triangle": "Use neutral tones on top and straight-cut trousers to balance your shoulders."
-    }
-  },
-  Vintage: {
-    title: "Vintage Classic Look",
-    description: "Timeless pieces with a nostalgic charm and relaxed silhouettes.",
-    items: ["Retro Knit", "High-Waist Trousers", "Leather Boots"],
-    bodyTips: {
-      Rectangle: "Use high-waisted vintage cuts to create more dynamic visual proportions.",
-      Pear: "Nostalgic A-line styles perfectly complement your natural curves.",
-      Hourglass: "Classic wrap dresses or high-waist skirts accentuate your classic figure.",
-      "Inverted Triangle": "Wide-leg vintage trousers help balance broader shoulder silhouettes."
-    }
-  },
-  Casual: {
-    title: "Effortless Casual Fit",
-    description: "Comfortable and stylish combinations for everyday wear.",
-    items: ["Basic Tee", "Comfort Chinos", "Clean Sneakers"],
-    bodyTips: {
-      Rectangle: "Layer a casual jacket over your tee to build more structure.",
-      Pear: "Light-colored tops with darker chinos draw attention upwards.",
-      Hourglass: "Simple tucked-in tees celebrate your balanced proportions effortlessly.",
-      "Inverted Triangle": "V-neck casual tops help soften the line of your shoulders."
-    }
-  },
-  Streetwear: {
-    title: "Streetwear Vibes",
-    description: "Trendy oversized fits with bold styling elements.",
-    items: ["Graphic Hoodie", "Cargo Pants", "High-Top Sneakers"],
-    bodyTips: {
-      Rectangle: "Boxy streetwear hoodies add desirable volume to your silhouette.",
-      Pear: "Statement sneakers and accessories pull focus toward your overall look.",
-      Hourglass: "Try cropped streetwear hoodies to maintain your waist definition.",
-      "Inverted Triangle": "Oversized graphic hoodies naturally suit your broader frame."
-    }
-  },
-  Formal: {
-    title: "Sharp Formal Look",
-    description: "Structured outfits that create a polished and confident appearance.",
-    items: ["Tailored Blazer", "Dress Shirt", "Oxford Shoes"],
-    bodyTips: {
-      Rectangle: "A structured blazer with slight padding adds power and definition.",
-      Pear: "Padded shoulders in formal wear create a perfectly balanced look.",
-      Hourglass: "Tailored blazers that nip at the waist are your definitive formal piece.",
-      "Inverted Triangle": "Single-breasted blazers with minimal lapels keep your formal look sharp."
-    }
-  }
-};
+
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -96,10 +40,33 @@ const Dashboard = () => {
   const { items: wardrobeItems, loading: wardrobeLoading } = useSelector((state) => state.wardrobe);
   const loading = authLoading || wardrobeLoading;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [todaySuggestion, setTodaySuggestion] = useState(null);
+  const [suggestionLoading, setSuggestionLoading] = useState(true);
+  const [suggestionError, setSuggestionError] = useState(false);
+
+  const loadRecommendation = async () => {
+    setSuggestionLoading(true);
+    setSuggestionError(false);
+    try {
+      const response = await recommendationApi.fetchTodayRecommendation();
+      if (response.success && response.data) {
+        setTodaySuggestion(response.data);
+      } else {
+        setTodaySuggestion(null);
+      }
+    } catch (error) {
+      console.error("Failed to fetch recommendation", error);
+      setSuggestionError(true);
+    } finally {
+      setSuggestionLoading(false);
+    }
+  };
 
   useEffect(() => {
     dispatch(fetchDashboard());
     dispatch(fetchWardrobe());
+    loadRecommendation();
   }, [dispatch]);
 
   const bodyType = useMemo(() => {
@@ -110,30 +77,6 @@ const Dashboard = () => {
     return dashboardData?.user?.preferences || user?.preferences || [];
   }, [dashboardData, user]);
 
-  // Dynamic Suggestion Logic
-  const suggestion = useMemo(() => {
-    const primaryStyle = userPreferences[0];
-    
-    if (!primaryStyle || !STYLE_MAPPING[primaryStyle]) {
-      return {
-        isFallback: true,
-        title: "Define Your Style",
-        description: "Start by adding your style preferences in your profile to get personalized suggestions.",
-        items: []
-      };
-    }
-
-    const styleData = STYLE_MAPPING[primaryStyle];
-    const bodySpecificTip = styleData.bodyTips[bodyType] || "";
-
-    return {
-      isFallback: false,
-      title: styleData.title,
-      description: bodySpecificTip ? `${styleData.description} ${bodySpecificTip}` : styleData.description,
-      items: styleData.items,
-      badge: primaryStyle
-    };
-  }, [userPreferences, bodyType]);
 
   // Personalized Style Tips Logic
   const styleTips = useMemo(() => {
@@ -234,6 +177,12 @@ const Dashboard = () => {
       </style>
 
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <FullLookModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        suggestion={todaySuggestion} 
+        wardrobeItems={wardrobeItems} 
+      />
 
       <div className="flex flex-col flex-1 overflow-hidden">
         <Topbar 
@@ -316,48 +265,81 @@ const Dashboard = () => {
               <div className="bg-[#81A6C6]/10 border border-[#81A6C6]/5 rounded-2xl p-6 md:p-8 transition-all duration-500 hover:translate-y-[-4px]">
                 <div className="flex items-center justify-between mb-4 md:mb-6">
                   <div className="flex items-center gap-2 text-[#81A6C6]">
-                    <Sparkles className="w-4 md:w-5 h-4 md:h-5" />
+                    
                     <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-[#81A6C6]">Today's Style Suggestion</span>
                   </div>
-                  {!suggestion.isFallback && (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/80 rounded-full text-[10px] font-bold text-[#81A6C6] border border-[#81A6C6]/10">
-                      <div className="w-1.5 h-1.5 bg-[#81A6C6] rounded-full"></div>
-                      {suggestion.badge}
-                    </div>
-                  )}
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center">
-                  <div className="flex-1 space-y-3 md:space-y-4">
-                    <h3 className="text-xl md:text-2xl font-['Playfair_Display'] font-medium">{suggestion.title}</h3>
-                    <p className="text-xs md:text-sm text-[#8A8A9A] leading-relaxed italic">"{suggestion.description}"</p>
-                    
-                    {!suggestion.isFallback && (
-                      <div className="flex flex-wrap gap-2 pt-1 md:pt-2">
-                        {suggestion.items.map(item => (
-                          <span key={item} className="px-2 md:px-3 py-1 bg-white/60 backdrop-blur-sm border border-[#81A6C6]/20 rounded-full text-[10px] md:text-xs text-[#3D3D4E]">
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    {!suggestion.isFallback && (
-                      <div className="flex items-center gap-1.5 text-[10px] text-[#81A6C6] pt-1 font-medium italic opacity-70">
-                        <Info size={12} />
-                        Based on your style preferences and body type
-                      </div>
-                    )}
+                {suggestionLoading ? (
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-6 bg-[#81A6C6]/20 rounded w-3/4"></div>
+                    <div className="h-4 bg-[#81A6C6]/20 rounded w-full"></div>
+                    <div className="h-4 bg-[#81A6C6]/20 rounded w-5/6"></div>
+                    <div className="h-20 bg-[#81A6C6]/20 rounded w-full mt-4"></div>
                   </div>
+                ) : suggestionError ? (
+                  <div className="flex flex-col items-center justify-center py-6 text-center space-y-3">
+                    <p className="text-sm text-[#8A8A9A]">Unable to generate today's recommendation.</p>
+                    <button 
+                      onClick={loadRecommendation}
+                      className="px-4 py-2 bg-white text-[#81A6C6] rounded-full text-xs font-medium border border-[#81A6C6]/20 hover:bg-[#81A6C6]/10 transition-colors"
+                    >
+                      Try Again
+                    </button>
+                  </div>
+                ) : !todaySuggestion ? (
+                  <div className="text-center py-6">
+                    <p className="text-sm text-[#8A8A9A]">No recommendation available.</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-6 items-start">
+                    <div className="flex-1 space-y-4 w-full">
+                      <h3 className="text-xl md:text-2xl font-['Playfair_Display'] font-medium">{todaySuggestion.title}</h3>
+                      <p className="text-xs md:text-sm text-[#8A8A9A] leading-relaxed italic">"{todaySuggestion.description}"</p>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                        <div className="space-y-2">
+                          <p className="text-[10px] font-bold tracking-wider text-[#81A6C6] uppercase">Top</p>
+                          <p className="text-xs md:text-sm text-[#3D3D4E]">{todaySuggestion.top}</p>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-[10px] font-bold tracking-wider text-[#81A6C6] uppercase">Bottom</p>
+                          <p className="text-xs md:text-sm text-[#3D3D4E]">{todaySuggestion.bottom}</p>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-[10px] font-bold tracking-wider text-[#81A6C6] uppercase">Footwear</p>
+                          <p className="text-xs md:text-sm text-[#3D3D4E]">{todaySuggestion.footwear}</p>
+                        </div>
+                        {todaySuggestion.accessories && todaySuggestion.accessories.length > 0 && (
+                          <div className="space-y-2">
+                            <p className="text-[10px] font-bold tracking-wider text-[#81A6C6] uppercase">Accessories</p>
+                            <ul className="text-xs md:text-sm text-[#3D3D4E] space-y-1">
+                              {todaySuggestion.accessories.map((acc, i) => (
+                                <li key={i} className="flex items-center gap-1.5">
+                                  <span className="text-[#81A6C6] text-[10px]">✓</span> {acc}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
 
-                  <button 
-                    onClick={() => suggestion.isFallback ? (window.location.href = '/profile') : null}
-                    className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[#81A6C6] text-white rounded-full font-medium text-xs md:text-sm hover:bg-[#6B90B0] transition-all hover:shadow-lg active:scale-95"
-                  >
-                    {suggestion.isFallback ? "Set Preferences" : "View Full Look"}
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 mt-4">
+                        <div className="flex items-center gap-1.5 text-[10px] text-[#81A6C6] font-medium italic">
+                          <Info size={12} />
+                          Generated for your body type and style preferences
+                        </div>
+                        <button 
+                          onClick={() => setIsModalOpen(true)}
+                          className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2 bg-[#81A6C6] text-white rounded-full font-medium text-xs hover:bg-[#6B90B0] transition-colors active:scale-95"
+                        >
+                          View Full Look
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

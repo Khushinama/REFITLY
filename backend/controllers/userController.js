@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import Wardrobe from "../models/Wardrobe.js";
+import DailyRecommendation from "../models/DailyRecommendation.js";
 import cloudinary from "../config/cloudinary.js";
 
 // Helper function to extract public_id from cloudinary URL
@@ -41,8 +42,8 @@ export const getProfile = async (req, res) => {
 // @access Private
 export const updateProfile = async (req, res) => {
   try {
-    console.log("Profile Update Request Body:", req.body);
-    console.log("Profile Update File:", req.file ? req.file.originalname : "No file");
+    // console.log("Profile Update Request Body:", req.body);
+    // console.log("Profile Update File:", req.file ? req.file.originalname : "No file");
 
     const { name, gender, preferences, removeImage } = req.body;
     const user = await User.findById(req.user._id);
@@ -67,14 +68,14 @@ export const updateProfile = async (req, res) => {
       if (user.profileImage) {
         const publicId = getPublicId(user.profileImage);
         if (publicId) {
-          console.log("Destroying old profile image from Cloudinary:", publicId);
+          // console.log("Destroying old profile image from Cloudinary:", publicId);
           await cloudinary.uploader.destroy(publicId);
         }
       }
       
       if (shouldRemove && !hasNewFile) {
         user.profileImage = null;
-        console.log("Profile image cleared in DB");
+        // console.log("Profile image cleared in DB");
       }
     }
 
@@ -98,10 +99,16 @@ export const updateProfile = async (req, res) => {
 
       const cloudinaryResult = await uploadToCloudinary();
       user.profileImage = cloudinaryResult.secure_url;
-      console.log("New profile image uploaded:", user.profileImage);
+      // console.log("New profile image uploaded:", user.profileImage);
     }
 
     const updatedUser = await user.save();
+
+    // Invalidate cache if style preferences were updated
+    if (preferences) {
+      await DailyRecommendation.deleteMany({ userId: updatedUser._id });
+    }
+
     res.status(200).json({
       message: "Profile updated successfully",
       user: {
@@ -173,6 +180,9 @@ export const saveBodyType = async (req, res) => {
     const user = await User.findById(req.user._id);
     user.bodyType = bodyType;
     await user.save();
+
+    // Invalidate cached recommendations since body type changed
+    await DailyRecommendation.deleteMany({ userId: user._id });
 
     res.status(200).json({
       message: "Body type saved successfully",

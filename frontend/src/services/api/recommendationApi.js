@@ -60,10 +60,32 @@ export const submitOutfitFeedback = async (outfitId, feedback, outfit = null) =>
   return response.data;
 };
 
+/**
+ * Fetch today's AI powered recommendation
+ */
+export const fetchTodayRecommendation = async () => {
+  const response = await axios.get(`${API_URL}/today`, getAuthConfig());
+  return response.data;
+};
+
+/**
+ * Fetch a Pexels image for an accessory
+ * @param {string} query 
+ */
+export const fetchAccessoryImage = async (query) => {
+  const response = await axios.get(`${API_URL}/image`, {
+    ...getAuthConfig(),
+    params: { query }
+  });
+  return response.data;
+};
+
 const recommendationApi = {
   fetchRecommendations,
   fetchSavedOutfits,
-  submitOutfitFeedback
+  submitOutfitFeedback,
+  fetchTodayRecommendation,
+  fetchAccessoryImage
 };
 
 export default recommendationApi;

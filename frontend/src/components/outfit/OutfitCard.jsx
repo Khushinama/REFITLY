@@ -147,7 +147,7 @@ const OutfitCard = React.memo(({
             className="mt-2 pt-3 border-t border-[rgba(180,165,148,0.15)] flex flex-col text-left group/teaser transition-all w-full"
           >
             <h4 className="text-xs font-bold text-[#1A1A2E] flex items-center gap-2 mb-1.5 group-hover/teaser:text-[#81A6C6] transition-colors">
-              <span className="text-[#F5A623]">✨</span> Click to view & enhance outfit <span className="ml-auto opacity-0 group-hover/teaser:opacity-100 transition-opacity">→</span>
+              <span className="text-[#F5A623]"></span> Click to view & enhance outfit <span className="ml-auto opacity-0 group-hover/teaser:opacity-100 transition-opacity">→</span>
             </h4>
             <p className="text-[10px] text-[#8A8A9A] leading-relaxed pl-5">
               View matching accessories from your wardrobe and get AI suggestions to complete your look.

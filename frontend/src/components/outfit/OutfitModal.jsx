@@ -1,10 +1,64 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Share2, Info } from 'lucide-react';
 import ActionButtons from './ActionButtons';
 import MatchScoreBadge from './MatchScoreBadge';
 import ColorPalette from './ColorPalette';
 import ReasonsList from './ReasonsList';
 import { generateOutfitName, formatScore } from '../../utils/formatters';
+import { submitOutfitFeedback, fetchAccessoryImage } from '../../services/api/recommendationApi';
+
+const getCategoryEmoji = (label) => {
+  if (!label) return '💎';
+  const lower = label.toLowerCase();
+  if (lower.includes('top')) return '👕';
+  if (lower.includes('bottom')) return '👖';
+  if (lower.includes('footwear') || lower.includes('shoes') || lower.includes('sneakers') || lower.includes('heels')) return '👟';
+  if (lower.includes('watch')) return '⌚';
+  if (lower.includes('bag') || lower.includes('tote') || lower.includes('clutch')) return '👜';
+  if (lower.includes('sunglasses') || lower.includes('glasses')) return '🕶';
+  if (lower.includes('hat') || lower.includes('cap')) return '🧢';
+  if (lower.includes('tie')) return '👔';
+  return '💎';
+};
+
+const SuggestedAccessoryCard = ({ title, reason }) => {
+  const [imageUrl, setImageUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchImage = async () => {
+      try {
+        const res = await fetchAccessoryImage(title);
+        if (isMounted && res.success && res.imageUrl) {
+          setImageUrl(res.imageUrl);
+        }
+      } catch (err) {
+        console.error("Failed to fetch image for", title);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    fetchImage();
+    return () => { isMounted = false; };
+  }, [title]);
+
+  return (
+    <div className="bg-white rounded-[20px] p-3 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow group">
+      <div className="aspect-square rounded-xl bg-[#F8F9FA] mb-3 relative flex items-center justify-center overflow-hidden border border-gray-50">
+        {loading ? (
+           <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
+        ) : imageUrl ? (
+           <img src={imageUrl} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        ) : (
+           <div className="text-3xl opacity-20">{getCategoryEmoji(title)}</div>
+        )}
+      </div>
+      <span className="text-xs font-bold text-[#1A1A2E] mb-1 leading-tight">{title}</span>
+      <span className="text-[10px] text-gray-500 leading-snug">{reason}</span>
+    </div>
+  );
+};
 
 const OutfitModal = ({ outfit, event, onClose, onFeedback, isProcessing, isHistoryView = false }) => {
   if (!outfit) return null;
@@ -32,7 +86,7 @@ const OutfitModal = ({ outfit, event, onClose, onFeedback, isProcessing, isHisto
         <div className="p-6 border-b border-gray-100 bg-white z-10 sticky top-0">
           <div className="flex items-center justify-between mb-4">
             <span className="px-3 py-1.5 rounded-full bg-[#E8F3EE] text-xs font-bold text-[#2A7B5C] uppercase tracking-wider flex items-center gap-1.5">
-              <span>✨</span> {formatScore(outfit.score)} Match
+              <span></span> {formatScore(outfit.score)} Match
             </span>
             <button 
               onClick={onClose}
@@ -100,7 +154,7 @@ const OutfitModal = ({ outfit, event, onClose, onFeedback, isProcessing, isHisto
                       </div>
                       <div className="px-1">
                         <p className="text-[10px] font-bold text-[#2A7B5C] uppercase tracking-widest flex items-center gap-1">
-                          <span>✨</span> YOUR WARDROBE
+                          <span></span> YOUR WARDROBE
                         </p>
                         <p className="text-sm font-semibold text-[#1A1A2E] mt-0.5 truncate">{acc.name}</p>
                       </div>
@@ -113,7 +167,7 @@ const OutfitModal = ({ outfit, event, onClose, onFeedback, isProcessing, isHisto
               {!isHistoryView && outfit.accessories && outfit.accessories.length > 0 && (
                 <div>
                   <h4 className="text-[10px] font-bold text-[#2A7B5C] uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <span>✨</span> FROM YOUR WARDROBE
+                    <span></span> FROM YOUR WARDROBE
                   </h4>
                   <div className="grid grid-cols-2 gap-4">
                     {outfit.accessories.map((acc, idx) => (
@@ -140,28 +194,20 @@ const OutfitModal = ({ outfit, event, onClose, onFeedback, isProcessing, isHisto
                 {outfit.enhancementSuggestions && outfit.enhancementSuggestions.length > 0 ? (
                   <>
                     <h4 className="flex items-center gap-2 text-[10px] font-bold text-[#5542F6] uppercase tracking-widest mb-4">
-                      <span className="text-[#81A6C6] text-sm">✨</span> RECOMMENDED TO ENHANCE
+                      <span className="text-[#81A6C6] text-sm"></span> RECOMMENDED TO ENHANCE
                     </h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {outfit.enhancementSuggestions.map((suggestion, idx) => {
                         const title = typeof suggestion === 'object' ? suggestion.title : suggestion;
                         const reason = typeof suggestion === 'object' ? suggestion.reason : "Elevates the outfit and creates a more polished appearance.";
-                        return (
-                          <div key={idx} className="bg-white rounded-[20px] p-3 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow">
-                            <div className="aspect-square rounded-xl bg-[#F8F9FA] mb-3 relative flex items-center justify-center">
-                              <div className="text-3xl opacity-20">💎</div>
-                            </div>
-                            <span className="text-xs font-bold text-[#1A1A2E] mb-1">{title}</span>
-                            <span className="text-[10px] text-gray-500 leading-snug">{reason}</span>
-                          </div>
-                        );
+                        return <SuggestedAccessoryCard key={idx} title={title} reason={reason} />;
                       })}
                     </div>
                   </>
                 ) : (
                   <div className="bg-[#F4F9F6] rounded-3xl p-6 border border-[#E8F3EE]">
                     <h4 className="flex items-center gap-2 text-[10px] font-bold text-[#2A7B5C] uppercase tracking-widest mb-2">
-                      <span className="text-sm">✨</span> AI STYLIST INSIGHT
+                      <span className="text-sm"></span> AI STYLIST INSIGHT
                     </h4>
                     <p className="text-sm text-[#1A1A2E] leading-relaxed font-medium">
                       Excellent! Your wardrobe already contains all the recommended accessories for this outfit. You are fully equipped to wear this look perfectly.

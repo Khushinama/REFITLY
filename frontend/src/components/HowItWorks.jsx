@@ -1,30 +1,34 @@
 import { Camera, Upload, Brain, CheckCircle } from 'lucide-react';
 import React from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 function HowItWorks() {
+
+    const navigate = useNavigate()
+
   const steps = [
     {
       icon: Camera,
-      title: 'Capture Your Body Shape',
-      description: 'Take a simple full-body photo and upload it to our secure platform.',
+      title: 'Create Your Style Profile',
+      description: 'Complete a quick onboarding quiz to build your personalized body-shape-aware style profile.',
       step: '01',
     },
     {
       icon: Upload,
-      title: 'Upload Your Wardrobe',
-      description: 'Add photos of your clothes. Our AI will catalog everything automatically.',
+      title: 'Organize Your Wardrobe',
+      description: 'Add clothing items to your digital wardrobe and let ReFitly understand your fashion collection..',
       step: '02',
     },
     {
       icon: Brain,
-      title: 'AI Analyzes Everything',
-      description: 'Our smart algorithm matches your body shape with your wardrobe and tracks rewear patterns.',
+      title: 'Get AI-Powered Styling',
+      description: 'Receive personalized outfit combinations based on your body shape, wardrobe, season, occasion, and style preferences.',
       step: '03',
     },
     {
       icon: CheckCircle,
-      title: 'Get Daily Outfit Suggestions',
-      description: 'Receive personalized outfit recommendations that look great and are safe to rewear.',
+      title: 'Build Your Fashion History',
+      description: 'Track worn outfits, manage rewear timing, and maintain a visual styling diary of your favorite looks.',
       step: '04',
     },
   ];
@@ -47,7 +51,7 @@ function HowItWorks() {
             return (
               <div key={index} className="relative">
                 <div className="bg-beige-50 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border border-beige-300 h-full">
-                  <div className="absolute -top-4 -left-4 w-12 h-12 bg-primary text-[#1e3a40] rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
+                  <div className="absolute -top-4 -left-4 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
                     {step.step}
                   </div>
 
@@ -75,12 +79,10 @@ function HowItWorks() {
         </div>
 
         <div className="mt-16 text-center">
-          <button className="bg-primary text-[#1e3a40] px-8 py-4 rounded-full hover:bg-primary-hover transition-all transform hover:scale-105 font-bold text-lg shadow-lg">
+          <button onClick={() => navigate('/signup')} className="bg-primary text-white px-8 py-4 rounded-full hover:bg-primary-hover transition-all transform hover:scale-105 font-bold text-lg shadow-lg">
             Start Your Free Trial Now
           </button>
-          <p className="mt-4 text-primary-dark/60 text-sm">
-            No credit card required • 14-day free trial • Cancel anytime
-          </p>
+         
         </div>
       </div>
     </section>

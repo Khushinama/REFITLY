@@ -91,7 +91,7 @@ function ResetPassword() {
 
           <button 
             disabled={loading}
-            className="w-full flex justify-center items-center gap-2 bg-primary hover:bg-primary-hover text-[#1e3a40] py-3 rounded-lg font-bold shadow-md transform hover:scale-[1.02] transition-all duration-200 active:scale-[0.98] disabled:opacity-70 disabled:scale-100 disabled:cursor-not-allowed"
+            className="w-full flex justify-center items-center gap-2 bg-primary hover:bg-primary-hover text-white py-3 rounded-lg font-bold shadow-md transform hover:scale-[1.02] transition-all duration-200 active:scale-[0.98] disabled:opacity-70 disabled:scale-100 disabled:cursor-not-allowed"
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Update Password"}
           </button>

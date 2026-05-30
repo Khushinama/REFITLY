@@ -1,6 +1,24 @@
 import { generateOutfits } from "../services/recommendationEngine.js";
+import { getTodayRecommendationData } from "../services/recommendationService.js";
+import { fetchPexelsImage } from "../services/pexelsService.js";
 import User from "../models/User.js";
 import Outfit from "../models/Outfit.js";
+
+/**
+ * Get an image for an accessory via Pexels
+ */
+export const getAccessoryImage = async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query) {
+            return res.status(400).json({ success: false, message: "Query parameter is required" });
+        }
+        const imageUrl = await fetchPexelsImage(query);
+        res.status(200).json({ success: true, imageUrl });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
+    }
+};
 
 /**
  * Controller to handle recommendation requests
@@ -155,6 +173,35 @@ export const getSavedOutfits = async (req, res) => {
             }
         });
     } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Get today's recommendation (Phase 2 AI Foundation)
+ */
+export const getTodayRecommendation = async (req, res) => {
+    try {
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({ success: false, message: "User not authenticated" });
+        }
+
+        const result = await getTodayRecommendationData(req.user._id);
+        
+        res.status(200).json({
+            success: true,
+            message: result.source === "cache" ? "Recommendation fetched successfully" : "Recommendation generated successfully",
+            source: result.source,
+            data: result.data
+        });
+    } catch (error) {
+        if (error.message === "User profile not found") {
+            return res.status(404).json({ success: false, message: error.message });
+        }
         res.status(500).json({
             success: false,
             message: "Internal Server Error",

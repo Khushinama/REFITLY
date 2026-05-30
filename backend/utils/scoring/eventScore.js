@@ -62,7 +62,7 @@ export const calculateEventScore = (items, requestedEvent) => {
     }
 
     if (avgScore >= 30) {
-        reasons.push(`Perfectly curated for ${requestedEvent} occasions ✨`);
+        reasons.push(`Perfectly curated for ${requestedEvent} occasions `);
     } else if (avgScore >= 15) {
         reasons.push(`Versatile pieces that work for ${requestedEvent} settings 💼`);
     } else {

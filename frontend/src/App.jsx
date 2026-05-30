@@ -81,7 +81,7 @@ const App = () => {
         toastOptions={{
           style: {
             background: '#ffffff',
-            color: '#1e3a40',
+            color: '#1A1A1A',
             border: '1px solid #eae5de',
             borderRadius: '12px',
             boxShadow: '0 10px 30px rgba(0,0,0,0.08)',

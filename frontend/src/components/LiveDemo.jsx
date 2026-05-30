@@ -43,7 +43,7 @@ function LiveDemo() {
               onClick={() => setActiveDemo('bodyShape')}
               className={`px-4 md:px-6 py-2.5 md:py-3 rounded-full text-sm md:text-base font-medium transition-all flex items-center justify-center ${
                 activeDemo === 'bodyShape'
-                  ? 'bg-primary text-[#1e3a40]'
+                  ? 'bg-primary text-white'
                   : 'bg-beige-100 text-primary-dark hover:bg-beige-200'
               }`}
             >
@@ -54,7 +54,7 @@ function LiveDemo() {
               onClick={() => setActiveDemo('rewear')}
               className={`px-4 md:px-6 py-2.5 md:py-3 rounded-full text-sm md:text-base font-medium transition-all flex items-center justify-center ${
                 activeDemo === 'rewear'
-                  ? 'bg-primary text-[#1e3a40]'
+                  ? 'bg-primary text-white'
                   : 'bg-beige-100 text-primary-dark hover:bg-beige-200'
               }`}
             >
@@ -65,7 +65,7 @@ function LiveDemo() {
               onClick={() => setActiveDemo('suggestions')}
               className={`px-4 md:px-6 py-2.5 md:py-3 rounded-full text-sm md:text-base font-medium transition-all flex items-center justify-center ${
                 activeDemo === 'suggestions'
-                  ? 'bg-primary text-[#1e3a40]'
+                  ? 'bg-primary text-white'
                   : 'bg-beige-100 text-primary-dark hover:bg-beige-200'
               }`}
             >
@@ -89,7 +89,7 @@ function LiveDemo() {
                           key={idx}
                           className={`p-3 rounded-lg ${
                             shape === 'Inverted Triangle'
-                              ? 'bg-primary text-[#1e3a40] font-bold'
+                              ? 'bg-primary text-white font-bold'
                               : 'bg-beige-100 text-primary-dark/70'
                           }`}
                         >
@@ -177,7 +177,7 @@ function LiveDemo() {
                       <p className="text-sm text-primary-dark/80">
                         Can rewear in: <span className="font-bold">{outfit.rewearIn}</span>
                       </p>
-                      <button className="mt-4 w-full bg-primary text-[#1e3a40] py-2 rounded-lg hover:bg-primary-hover font-bold transition-all">
+                      <button className="mt-4 w-full bg-primary text-white py-2 rounded-lg hover:bg-primary-hover font-bold transition-all">
                         Try This Outfit
                       </button>
                     </div>

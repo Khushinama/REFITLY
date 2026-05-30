@@ -136,6 +136,34 @@ export function matchAccessories(outfitItems, userAccessories, options = {}) {
     enhancementSuggestions = suggestions.slice(0, 2);
   }
 
+  // Inject a compatible color into the suggested title to enhance search results and visual cohesion
+  if (outfitColors.size > 0 && enhancementSuggestions.length > 0) {
+    const mainOutfitColor = Array.from(outfitColors)[0];
+    const compColors = compatibleColors[mainOutfitColor] || ["black", "white"];
+    
+    enhancementSuggestions = enhancementSuggestions.map(s => {
+      let targetColor = "Black"; // default fallback
+      const t = s.type.toLowerCase();
+      
+      if (t === "jewelry" || t === "watch" || t === "eyewear") {
+         const metals = compColors.filter(c => c === "silver" || c === "gold" || c === "black");
+         targetColor = metals.length > 0 ? metals[0] : "Silver";
+      } else if (t === "footwear" || t === "bag") {
+         const neutrals = compColors.filter(c => c === "black" || c === "brown" || c === "white" || c === "beige" || c === "navy");
+         targetColor = neutrals.length > 0 ? neutrals[0] : "Black";
+      } else {
+         const basics = compColors.filter(c => c === "black" || c === "white" || c === "navy" || c === "grey");
+         targetColor = basics.length > 0 ? basics[0] : "Black";
+      }
+      
+      const capitalizedColor = targetColor.charAt(0).toUpperCase() + targetColor.slice(1);
+      return {
+        ...s,
+        title: `${capitalizedColor} ${s.title}`
+      };
+    });
+  }
+
   return {
     matchedAccessories,
     enhancementSuggestions

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Sparkles, RefreshCcw } from 'lucide-react';
+import { Search, Star, RefreshCcw } from 'lucide-react';
 
 const EmptyState = ({ type = 'no-results', onReset, customTitle, customDescription, customCta }) => {
   const content = {

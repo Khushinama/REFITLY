@@ -1,4 +1,4 @@
-import { Shirt, Sparkles, ArrowRight } from 'lucide-react';
+import { Shirt, ArrowRight } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,7 +12,7 @@ function Hero() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <div className="inline-flex items-center space-x-2 bg-primary/10 px-4 py-2 rounded-full">
-              <Sparkles className="w-4 h-4 text-primary" />
+              
               <span className="text-sm font-medium text-primary-dark">
                 Body-Shape Adaptive AI Styling
               </span>
@@ -29,13 +29,11 @@ function Hero() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button onClick={() => navigate("/signup")} className="w-full sm:w-auto bg-primary text-[#1e3a40] px-8 py-3 rounded-full hover:bg-primary-hover transition-all transform hover:scale-105 flex items-center justify-center space-x-2 font-bold shadow-lg">
+              <button onClick={() => navigate("/signup")} className="w-full sm:w-auto bg-primary text-white px-8 py-3 rounded-full hover:bg-primary-hover transition-all transform hover:scale-105 flex items-center justify-center space-x-2 font-bold shadow-lg">
                 <span>Start Free Trial</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
-              <button className="w-full sm:w-auto border-2 border-primary text-primary-dark px-8 py-3 rounded-full hover:bg-primary hover:text-[#1e3a40] transition-all font-bold">
-                Watch Demo
-              </button>
+             
             </div>
 
             {/* <div className="flex items-center space-x-8 pt-6">
@@ -56,7 +54,7 @@ function Hero() {
 
           <div className="relative">
             <div className="relative bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl p-8 md:p-12">
-              <div className="absolute -top-4 -right-4 bg-primary text-[#1e3a40] px-6 py-3 rounded-full shadow-lg">
+              <div className="absolute -top-4 -right-4 bg-primary text-white px-6 py-3 rounded-full shadow-lg">
                 <p className="text-sm font-bold">AI Powered</p>
               </div>
 
@@ -73,7 +71,7 @@ function Hero() {
                     <p className="text-sm text-primary-dark/60">Today's Suggestion</p>
                     <p className="text-lg font-bold text-primary-dark">Dark Top + Light Bottom</p>
                   </div>
-                  <div className="bg-primary text-[#1e3a40] rounded-lg p-4 text-center">
+                  <div className="bg-primary text-white rounded-lg p-4 text-center">
                     <p className="font-bold">Safe to Rewear: 3 Outfits</p>
                   </div>
                 </div>

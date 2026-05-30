@@ -1,4 +1,4 @@
-import { LayoutDashboard, Shirt, Sparkles, UserCircle, X, History, LogOut } from 'lucide-react';
+import { LayoutDashboard, Shirt, Star, UserCircle, X, History, LogOut } from 'lucide-react';
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -10,7 +10,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { label: 'Wardrobe', icon: Shirt, path: '/wardrobe' },
-    { label: 'Outfits', icon: Sparkles, path: '/outfits' },
+    { label: 'Outfits', icon: Star, path: '/outfits' },
     { label: 'History', icon: History, path: '/history' },
   ];
 

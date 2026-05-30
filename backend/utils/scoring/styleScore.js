@@ -39,7 +39,7 @@ export const calculateStyleScore = (items, user, requestedEvent, requestedStyles
     const isSolid = activeItems.every(i => i.pattern?.toLowerCase() === "solid" || !i.pattern);
     if (distinctColors.length <= 2 && isSolid && activePrefs.includes("minimal")) {
         score += 15;
-        reasons.push("Clean minimal vibe — just your style ✨");
+        reasons.push("Clean minimal vibe — just your style ");
     }
 
     // 4. Classy/Formal bonus (+10)

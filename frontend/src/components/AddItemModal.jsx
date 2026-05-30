@@ -396,7 +396,7 @@ const AddItemModal = ({ isOpen, onClose, onItemAdded, editItem = null }) => {
               </select>
               {formData.category === 'Outerwear' && (
                 <p className="text-[9px] text-[#81A6C6] mt-1 font-medium italic animate-in fade-in slide-in-from-top-1">
-                  Tip: Add tags like jacket, blazer, hoodie for better styling ✨
+                  Tip: Add tags like jacket, blazer, hoodie for better styling 
                 </p>
               )}
             </div>
@@ -513,7 +513,7 @@ const AddItemModal = ({ isOpen, onClose, onItemAdded, editItem = null }) => {
               </div>
               {detectedColor && (
                 <p className="ml-6 text-[10px] text-green-500/80 italic">
-                  Detected Color: {detectedColor} ✨
+                  Detected Color: {detectedColor} 
                 </p>
               )}
             </div>

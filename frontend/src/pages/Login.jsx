@@ -143,7 +143,7 @@ function Login() {
                  <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center items-center gap-2 bg-primary hover:bg-primary-hover text-[#1e3a40] font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="w-full flex justify-center items-center gap-2 bg-primary hover:bg-primary-hover text-white font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
                 </button>
