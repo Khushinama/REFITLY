@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import React from "react"
+import authBg from "../assets/auth-bg.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser, verifyOtpThunk, resendOtpThunk, clearError } from "../store/slices/authSlice";
 import { useNavigate, Link } from "react-router-dom";
@@ -140,7 +141,7 @@ function Signup() {
     <div
       className="relative min-h-screen w-full flex overflow-visible bg-primary-dark"
       style={{
-        backgroundImage: "url('/src/assets/auth-bg.jpg')",
+        backgroundImage: `url(${authBg})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
