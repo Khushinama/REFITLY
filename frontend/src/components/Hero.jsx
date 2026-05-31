@@ -29,7 +29,7 @@ function Hero() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button onClick={() => navigate("/signup")} className="w-full sm:w-auto bg-primary text-white px-8 py-3 rounded-full hover:bg-primary-hover transition-all transform hover:scale-105 flex items-center justify-center space-x-2 font-bold shadow-lg">
+              <button onClick={() => navigate("/signup")} className="w-full sm:w-auto bg-primary/90 text-white px-8 py-3 rounded-full hover:bg-primary-hover transition-all transform hover:scale-105 flex items-center justify-center space-x-2 font-bold shadow-lg">
                 <span>Start Free Trial</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
@@ -53,14 +53,14 @@ function Hero() {
           </div>
 
           <div className="relative">
-            <div className="relative bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl p-8 md:p-12">
-              <div className="absolute -top-4 -right-4 bg-primary text-white px-6 py-3 rounded-full shadow-lg">
+            <div className="relative bg-[#eaddcf] rounded-3xl p-8 md:p-12">
+              <div className="absolute -top-4 -right-4 bg-primary/90 text-white px-6 py-3 rounded-full shadow-lg">
                 <p className="text-sm font-bold">AI Powered</p>
               </div>
 
               <div className="bg-beige-50 rounded-2xl p-8 shadow-xl">
                 <div className="flex items-center justify-center mb-6">
-                  <Shirt className="w-32 h-32 text-primary" />
+                  <Shirt className="w-32 h-32 text-black/" />
                 </div>
                 <div className="space-y-4">
                   <div className="bg-beige-100 rounded-lg p-4">
@@ -71,7 +71,7 @@ function Hero() {
                     <p className="text-sm text-primary-dark/60">Today's Suggestion</p>
                     <p className="text-lg font-bold text-primary-dark">Dark Top + Light Bottom</p>
                   </div>
-                  <div className="bg-primary text-white rounded-lg p-4 text-center">
+                  <div className="bg-primary/90 text-white rounded-lg p-4 text-center">
                     <p className="font-bold">Safe to Rewear: 3 Outfits</p>
                   </div>
                 </div>

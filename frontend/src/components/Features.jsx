@@ -78,7 +78,7 @@ function Features() {
           })}
         </div>
 
-        <div className="mt-16 bg-gradient-to-r from-[#7eaebf] to-[#6793a5] rounded-3xl p-8 md:p-12 text-center shadow-lg">
+        <div className="mt-16 bg-gradient-to-br from-primary/80 to-primary/60 rounded-3xl p-8 md:p-12 text-center shadow-lg">
           <h3 className="text-2xl md:text-3xl font-bold text-primary-dark mb-4">
             Works for Everyone, Everywhere
           </h3>

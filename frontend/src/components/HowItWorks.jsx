@@ -57,7 +57,7 @@ function HowItWorks() {
 
                   <div className="mt-4 mb-6">
                     <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-4">
-                      <Icon className="w-8 h-8 text-primary" />
+                      <Icon className="w-8 h-8 text-primary-dark" />
                     </div>
                   </div>
 
