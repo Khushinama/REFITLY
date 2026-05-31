@@ -1,8 +1,9 @@
 import axios from "axios";
 
-const API = "http://localhost:5000/api/auth";
-const USER_API = "http://localhost:5000/api/user";
-const DASHBOARD_API = "http://localhost:5000/api/dashboard";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API = `${BASE_URL}/auth`;
+const USER_API = `${BASE_URL}/user`;
+const DASHBOARD_API = `${BASE_URL}/dashboard`;
 
 const getAuthConfig = () => {
   const token = localStorage.getItem('token');
