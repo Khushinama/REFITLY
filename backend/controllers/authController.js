@@ -133,6 +133,7 @@ export const loginUser = async (req, res) => {
         profileImage: user.profileImage,
         gender: user.gender,
         preferences: user.preferences,
+        onboardingCompleted: user.onboardingCompleted,
       },
     });
 

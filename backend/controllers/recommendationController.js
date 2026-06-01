@@ -46,7 +46,20 @@ export const getRecommendations = async (req, res) => {
             includeLayer
         };
 
-        const result = await generateOutfits(req.user._id, options);
+        const user = await User.findById(req.user._id).populate('likedOutfits savedOutfits');
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        if (!user.gender || user.gender === "Prefer not to say" || !user.onboardingCompleted) {
+            return res.status(400).json({
+                success: false,
+                error: "GENDER_REQUIRED",
+                message: "Please complete your style profile to generate outfits."
+            });
+        }
+
+        const result = await generateOutfits(user._id, options);
 
         if (result.error) {
             return res.status(400).json({
@@ -57,8 +70,7 @@ export const getRecommendations = async (req, res) => {
         }
 
         // Mark outfits as liked/saved based on user data
-        const user = await User.findById(req.user._id).populate('likedOutfits savedOutfits');
-        if (user && result.data?.outfits) {
+        if (result.data?.outfits) {
             const likedIds = user.likedOutfits.filter(Boolean).map(o => o.signature || o.id || o.toString());
             const savedIds = user.savedOutfits.filter(Boolean).map(o => o.signature || o.id || o.toString());
             

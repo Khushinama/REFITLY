@@ -25,7 +25,8 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      if (!user.bodyType) {
+      const isMissingOnboarding = !user.onboardingCompleted || user.gender === "Prefer not to say" || !user.gender;
+      if (isMissingOnboarding) {
         navigate("/onboarding");
       } else {
         navigate("/dashboard");

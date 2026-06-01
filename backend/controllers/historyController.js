@@ -84,7 +84,8 @@ export const addOutfitHistory = async (req, res) => {
                     },
                     selectedEvent: finalEvent,
                     selectedStyle: finalStyle,
-                    selectedSeason: finalSeason
+                    selectedSeason: finalSeason,
+                    selectedGender: req.user.gender
                 });
             }
 

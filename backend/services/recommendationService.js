@@ -4,11 +4,11 @@ import DailyRecommendation from "../models/DailyRecommendation.js";
 import { generateOutfitRecommendation } from "./geminiService.js";
 import { fetchPexelsImage } from "./pexelsService.js";
 
-const fetchAndAttachImages = async (recommendation) => {
+const fetchAndAttachImages = async (recommendation, gender = "") => {
     const pexelsPromises = [];
     
     const fetchAndAssign = async (key, query) => {
-        const url = await fetchPexelsImage(query);
+        const url = await fetchPexelsImage(query, gender);
         return { key, url };
     };
 
@@ -17,7 +17,7 @@ const fetchAndAttachImages = async (recommendation) => {
     if (recommendation.footwear) pexelsPromises.push(fetchAndAssign('footwear', recommendation.footwear));
     
     const accPromises = (recommendation.accessories || []).map(acc => 
-        fetchPexelsImage(acc).then(url => ({ key: `acc_${acc}`, url, name: acc }))
+        fetchPexelsImage(acc, gender).then(url => ({ key: `acc_${acc}`, url, name: acc }))
     );
 
     const results = await Promise.all([...pexelsPromises, ...accPromises]);
@@ -75,7 +75,7 @@ export const getTodayRecommendationData = async (userId) => {
             const hasAccessoriesImages = hasImages && existingRec.recommendation.images.accessories && Object.keys(existingRec.recommendation.images.accessories).length > 0;
 
             if (!hasImages || !hasTop || (needsAccessories && !hasAccessoriesImages)) {
-                existingRec.recommendation = await fetchAndAttachImages(existingRec.recommendation);
+                existingRec.recommendation = await fetchAndAttachImages(existingRec.recommendation, user.gender);
                 
                 // Use updateOne to save the modified mixed object
                 await DailyRecommendation.updateOne(
@@ -96,11 +96,12 @@ export const getTodayRecommendationData = async (userId) => {
     // 3. Generate AI recommendation if not found or invalidated
     let recommendation = await generateOutfitRecommendation(
         user.bodyType,
-        user.preferences || []
+        user.preferences || [],
+        user.gender
     );
 
     // Fetch images from Pexels in parallel
-    recommendation = await fetchAndAttachImages(recommendation);
+    recommendation = await fetchAndAttachImages(recommendation, user.gender);
 
     // 4. Save to cache with personalization snapshot
     await DailyRecommendation.create({

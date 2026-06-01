@@ -6,7 +6,7 @@
  * @returns {Array<string>} 2 to 3 tailored reasons
  */
 export const generateOutfitReasons = (input = {}) => {
-    const { outfit, selectedEvent = 'casual', selectedStyle = [], selectedSeason = 'all' } = input;
+    const { outfit, selectedEvent = 'casual', selectedStyle = [], selectedSeason = 'all', selectedGender = '' } = input;
     const reasons = [];
 
     if (!outfit || !outfit.items) return ["Great everyday look"];
@@ -24,6 +24,8 @@ export const generateOutfitReasons = (input = {}) => {
         : (selectedStyle ? [selectedStyle.toLowerCase()] : []);
     
     const seasonLower = String(selectedSeason || 'all').toLowerCase();
+    const isFemale = selectedGender === 'Female';
+    const isMale = selectedGender === 'Male';
 
     // Color extraction
     const activeItems = Object.values(items).filter(Boolean);

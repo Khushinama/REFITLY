@@ -75,9 +75,10 @@ const callPexels = async (searchQuery, useIsolated = true) => {
 /**
  * Fetch a fashion-focused image from Pexels API with fallback strategy
  * @param {string} query - The search query
+ * @param {string} gender - The gender constraint
  * @returns {Promise<string|null>} - The URL of the image or null if failed
  */
-export const fetchPexelsImage = async (query) => {
+export const fetchPexelsImage = async (query, gender = "") => {
     const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
     if (!PEXELS_API_KEY) {
         console.warn("PEXELS_API_KEY is missing. Skipping image fetch.");
@@ -85,16 +86,17 @@ export const fetchPexelsImage = async (query) => {
     }
 
     const searchTerms = getSearchTerms(query);
+    const prefix = gender && gender !== "Prefer not to say" && gender !== "Other" ? `${gender.toLowerCase()} ` : "";
     
     // Pass 1: Try with "isolated product"
     for (const term of searchTerms) {
-        const url = await callPexels(term, true);
+        const url = await callPexels(`${prefix}${term}`, true);
         if (url) return url;
     }
 
     // Pass 2: Try with just "fashion" (broader fallback)
     for (const term of searchTerms) {
-        const url = await callPexels(term, false);
+        const url = await callPexels(`${prefix}${term}`, false);
         if (url) return url;
     }
     

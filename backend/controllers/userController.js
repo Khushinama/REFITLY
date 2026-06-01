@@ -119,6 +119,7 @@ export const updateProfile = async (req, res) => {
         preferences: updatedUser.preferences,
         profileImage: updatedUser.profileImage,
         bodyType: updatedUser.bodyType,
+        onboardingCompleted: updatedUser.onboardingCompleted,
       },
     });
   } catch (error) {

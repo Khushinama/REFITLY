@@ -7,7 +7,7 @@ import User from "../models/User.js";
  */
 export const saveStyleProfile = async (req, res) => {
   try {
-    const { bodyType, skinTone, stylePreference, favoriteColors } = req.body;
+    const { bodyType, skinTone, stylePreference, favoriteColors, gender } = req.body;
 
     // Validation
     if (skinTone && !["warm", "cool", "neutral"].includes(skinTone)) {
@@ -22,6 +22,10 @@ export const saveStyleProfile = async (req, res) => {
       return res.status(400).json({ message: "Favorite colors must be an array." });
     }
 
+    if (gender && !["Male", "Female", "Non-binary", "Other", "Prefer not to say"].includes(gender)) {
+      return res.status(400).json({ message: "Invalid gender." });
+    }
+
     const userId = req.user.id;
 
     const updateData = {};
@@ -29,6 +33,8 @@ export const saveStyleProfile = async (req, res) => {
     if (skinTone) updateData.skinTone = skinTone;
     if (stylePreference) updateData.stylePreference = stylePreference;
     if (favoriteColors) updateData.favoriteColors = favoriteColors;
+    if (gender) updateData.gender = gender;
+    updateData.onboardingCompleted = true;
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,

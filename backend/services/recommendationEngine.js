@@ -183,7 +183,8 @@ export async function generateOutfits(userId, options = {}) {
                 outfit: outfitResult,
                 selectedEvent: event,
                 selectedStyle: style,
-                selectedSeason: season
+                selectedSeason: season,
+                selectedGender: user.gender
             });
 
             return outfitResult;

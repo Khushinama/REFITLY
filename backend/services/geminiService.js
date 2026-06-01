@@ -31,7 +31,7 @@ const getFallbackRecommendation = () => {
     };
 };
 
-export const generateOutfitRecommendation = async (bodyType, stylePreferences) => {
+export const generateOutfitRecommendation = async (bodyType, stylePreferences, gender = "Female") => {
     try {
         const model = getGenerativeModel();
         
@@ -57,13 +57,26 @@ Rules for ${style} style:
             styleRulesContext = "Use standard fashion rules for the selected style.";
         }
 
+        let genderRule = "";
+        if (gender === "Female") {
+            genderRule = "Generate ONLY women's fashion recommendations. Do NOT suggest men's clothing, cuts, or styling.";
+        } else if (gender === "Male") {
+            genderRule = "Generate ONLY men's fashion recommendations. Do NOT suggest women's clothing, cuts, or styling.";
+        } else {
+            genderRule = "Generate unisex or gender-neutral fashion recommendations.";
+        }
+
         const prompt = `You are a professional fashion stylist.
-Your task is to generate a personalized outfit recommendation based on the user's body type and style preferences.
+Your task is to generate a personalized outfit recommendation based on the user's body type, gender, and style preferences.
 You must understand body shape styling principles, fashion aesthetics, and outfit composition.
 
 User Profile:
+- Gender: ${gender}
 - Body Type: ${bodyType || "Not specified"}
 - Style Preferences: ${styles.join(", ")}
+
+GENDER RULE (CRITICAL):
+${genderRule}
 
 STYLE RULES ENGINE (CRITICAL):
 You MUST build the outfit ONLY from the categories and aesthetics defined below for the selected style(s):

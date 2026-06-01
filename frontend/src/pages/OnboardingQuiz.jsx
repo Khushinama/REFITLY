@@ -16,6 +16,7 @@ const OnboardingQuiz = () => {
   const [skinTone, setSkinTone] = useState("");
   const [stylePreference, setStylePreference] = useState([]);
   const [favoriteColors, setFavoriteColors] = useState([]);
+  const [gender, setGender] = useState(null);
 
   const skinTones = [
     { label: "Warm", value: "warm", desc: "Golden, yellow, or peach undertones" },
@@ -37,6 +38,15 @@ const OnboardingQuiz = () => {
   ];
   const questions = [
     {
+      type: "gender",
+      question: "Which fashion profile best describes you?",
+      options: [
+        { label: "Women's Fashion (female)", value: "Female" },
+        { label: "Men's Fashion (male)", value: "Male" },
+      ],
+    },
+    {
+      type: "bodyShape",
       question: "How would you describe your shoulder width relative to your hips?",
       options: [
         { label: "My shoulders and hips are about the same width", value: "A" },
@@ -83,8 +93,14 @@ const OnboardingQuiz = () => {
   const handleNext = async () => {
     if (selectedOption === null) return;
 
-    const updatedAnswers = [...answers, selectedOption];
-    setAnswers(updatedAnswers);
+    let updatedAnswers = [...answers];
+    if (questions[step].type === "gender") {
+      setGender(selectedOption);
+    } else {
+      updatedAnswers = [...answers, selectedOption];
+      setAnswers(updatedAnswers);
+    }
+    
     setSelectedOption(null);
 
     if (step < totalSteps - 1) {
@@ -111,7 +127,8 @@ const OnboardingQuiz = () => {
       skinTone,
       stylePreference,
       favoriteColors,
-      bodyType: result
+      bodyType: result,
+      gender
     };
     
     // We can also import and use saveStyleProfileThunk here
@@ -315,7 +332,7 @@ const OnboardingQuiz = () => {
               Style Analysis
             </span>
             <span className="bg-[#AACDDC]/18 text-[#8A8A9A] text-[10px] font-medium tracking-[0.1em] uppercase rounded-full px-4 py-1.5">
-              Step {step + 1} of 4
+              Step {step + 1} of {totalSteps}
             </span>
           </div>
           </div>
@@ -345,7 +362,7 @@ const OnboardingQuiz = () => {
             />
           </div>
           <div className="flex justify-between items-center px-1">
-            <span className="text-[10px] tracking-widest text-[#8A8A9A] uppercase">Question {step + 1} of 4</span>
+            <span className="text-[10px] tracking-widest text-[#8A8A9A] uppercase">Question {step + 1} of {totalSteps}</span>
             <span className="text-[10px] tracking-widest text-[#81A6C6] uppercase font-medium">{Math.round(currentProgress)}% complete</span>
           </div>
         </div>
@@ -363,9 +380,10 @@ const OnboardingQuiz = () => {
           </div>
 
           <div className="flex flex-col gap-3 max-w-2xl w-full">
-            {questions[step].options.map((option) => {
+            {questions[step].options.map((option, index) => {
               const alphabetMap = ["A", "B", "C", "D"];
-              const letter = alphabetMap[questions[step].options.indexOf(option)];
+              // For gender, just use A and B based on index
+              const letter = alphabetMap[index];
               const isSelected = selectedOption === option.value;
 
               return (
