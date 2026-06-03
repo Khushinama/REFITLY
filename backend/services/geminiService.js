@@ -117,30 +117,55 @@ The JSON must exactly match this structure:
   "whyItWorks": ["Array of Strings - Explaining why this fits the user's body type and style"]
 }`;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-        
-        try {
-            const cleanedText = cleanJsonResponse(text);
-            const parsedJson = JSON.parse(cleanedText);
-            
-            // Validate required fields
-            const requiredFields = ["title", "description", "top", "bottom", "footwear", "accessories", "whyItWorks"];
-            for (const field of requiredFields) {
-                if (parsedJson[field] === undefined) {
-                    console.warn(`Gemini response missing field: ${field}`);
+        let retries = 3;
+        let delay = 1000; // 1 second initial delay
+
+        while (retries > 0) {
+            try {
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const text = response.text();
+                
+                try {
+                    const cleanedText = cleanJsonResponse(text);
+                    const parsedJson = JSON.parse(cleanedText);
+                    
+                    // Validate required fields
+                    const requiredFields = ["title", "description", "top", "bottom", "footwear", "accessories", "whyItWorks"];
+                    for (const field of requiredFields) {
+                        if (parsedJson[field] === undefined) {
+                            console.warn(`Gemini response missing field: ${field}`);
+                            return getFallbackRecommendation();
+                        }
+                    }
+                    
+                    return parsedJson;
+                } catch (parseError) {
+                    console.error("Failed to parse Gemini response as JSON:", text);
                     return getFallbackRecommendation();
                 }
+            } catch (error) {
+                console.error(`Gemini AI API Error (Retries left: ${retries - 1}):`, error.message);
+                
+                const isTransientError = error.message && (
+                    error.message.includes("503") || 
+                    error.message.includes("429") || 
+                    error.message.includes("temporarily overloaded") ||
+                    error.message.includes("fetch failed")
+                );
+
+                if (retries === 1 || !isTransientError) {
+                    return getFallbackRecommendation();
+                }
+                
+                // Wait before retrying
+                await new Promise(resolve => setTimeout(resolve, delay));
+                delay *= 2; // Exponential backoff (1s -> 2s -> 4s)
+                retries--;
             }
-            
-            return parsedJson;
-        } catch (parseError) {
-            console.error("Failed to parse Gemini response as JSON:", text);
-            return getFallbackRecommendation();
         }
     } catch (error) {
-        console.error("Gemini AI API Error:", error.message);
+        console.error("Gemini AI API Initialization Error:", error.message);
         return getFallbackRecommendation();
     }
 };
