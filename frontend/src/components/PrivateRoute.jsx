@@ -10,11 +10,8 @@ const PrivateRoute = ({ children }) => {
     return <Navigate to="/login" />;
   }
 
-  const isMissingOnboarding = !user?.onboardingCompleted || user?.gender === "Prefer not to say" || !user?.gender;
-  
-  if (isMissingOnboarding && location.pathname !== "/onboarding") {
-    return <Navigate to="/onboarding" />;
-  }
+  // Users are routed to /onboarding upon login if they are missing data, 
+  // but they are allowed to skip it and navigate freely afterwards.
 
   return children;
 };
