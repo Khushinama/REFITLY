@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { Input } from "../components/Input";
 import { PasswordInput } from "../components/PasswordInput";
 import { validateEmail } from "../utils/validation";
+import BrandLogo from "../components/common/BrandLogo";
 
 function Login() {
   const [form, setForm] = useState({
@@ -90,6 +91,11 @@ function Login() {
         backgroundPosition: "center",
       }}
     >
+      {/* Brand Logo in top left */}
+      <div className="absolute top-6 left-6 md:top-8 md:left-8 z-50 bg-white/70 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg border border-white/20">
+        <BrandLogo onClick={() => navigate("/")} />
+      </div>
+
       {/* Palette Overlay */}
       <div className="absolute inset-0 bg-primary-dark/60 z-0 backdrop-blur-[2px]"></div>
 

@@ -218,7 +218,7 @@ const Onboarding = () => {
       {/* =========================
      HEADER - Centered Layout
      ========================= */}
-<div className="w-full max-w-[760px] flex flex-row items-center mb-14">
+<div onClick={()=> navigate("/")} className="w-full max-w-[760px] flex flex-row items-center mb-14">
 
   {/* Logo - Smaller & Centered */}
   <BrandLogo />

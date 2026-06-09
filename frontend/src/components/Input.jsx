@@ -24,12 +24,12 @@ export const Input = React.forwardRef(({ label, error, success, className = "", 
       <AnimatePresence>
         {isError && (
           <motion.span
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="text-xs text-red-500 mt-1 font-medium absolute -bottom-5"
+            initial={{ opacity: 0, y: -5, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -5, height: 0 }}
+            className="text-xs text-red-500 mt-1 font-medium block overflow-hidden"
           >
-            {error}
+            <div className="pt-1">{error}</div>
           </motion.span>
         )}
       </AnimatePresence>

@@ -1,37 +1,49 @@
 import dotenv from "dotenv";
-import nodemailer from "nodemailer";
+import axios from "axios";
 
 // ✅ Load env variables
 dotenv.config();
 
 const sendEmail = async (to, subject, html) => {
-  try {
-    // ✅ Create transporter
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST?.trim(),
-      port: Number(process.env.EMAIL_PORT),
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER?.trim(),
-        pass: process.env.EMAIL_PASS?.trim(),
-      },
-    });
+  // Use BREVO_API_KEY, fallback to EMAIL_PASS if it happens to be a valid API key
+  const apiKey = process.env.BREVO_API_KEY || process.env.EMAIL_PASS;
 
-    // ✅ Mail options
-    const mailOptions = {
-      from: `"ReFitly" <${process.env.EMAIL_FROM}>`,
-      to,
-      subject,
-      html,
+  if (!apiKey) {
+    console.error("❌ Email configuration is missing in environment variables.");
+    throw new Error("Server configuration error: Email API Key not setup.");
+  }
+
+  try {
+    const payload = {
+      sender: {
+        name: "ReFitly",
+        email: process.env.EMAIL_FROM || "khushinama2006@gmail.com",
+      },
+      to: [
+        {
+          email: to,
+        },
+      ],
+      subject: subject,
+      htmlContent: html,
     };
 
-    // ✅ Send email
-    const info = await transporter.sendMail(mailOptions);
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      payload,
+      {
+        headers: {
+          "api-key": apiKey.trim(),
+          "accept": "application/json",
+          "content-type": "application/json",
+        },
+      }
+    );
 
-    console.log("✅ Email sent:", info.messageId);
+    console.log("✅ Email sent via Brevo API:", response.data);
   } catch (error) {
-    console.error("❌ Email sending failed:", error.message);
-    throw new Error("Email sending failed");
+    console.error("❌ Email sending failed:", error.response?.data || error.message);
+    throw new Error("Email sending failed. Please try again later.");
   }
 };
 

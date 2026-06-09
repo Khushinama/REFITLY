@@ -17,8 +17,11 @@ function Navbar() {
     { name: 'Features', href: '#features' },
     { name: 'How It Works', href: '#how-it-works' },
     { name: 'Demo', href: '#demo' },
-    {name: 'Dashboard',href: "/dashboard"}
   ];
+
+  if (token) {
+    navLinks.push({ name: 'Dashboard', href: '/dashboard' });
+  }
 
   const handleLogout = () => {
     dispatch(logout());

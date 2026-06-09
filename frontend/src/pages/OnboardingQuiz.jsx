@@ -323,7 +323,7 @@ const OnboardingQuiz = () => {
         {/* ── HEADER: tags + headline + subtext — all left-aligned ─────────── */}
         <div className="flex flex-col items-start gap-5">
 
-          <div className="flex flex-row items-start gap-5">
+          <div onClick={()=> navigate("/")} className="flex flex-row items-start gap-5">
           {/* Brand Logo - Floating, clean, no circle wrapper */}
           <BrandLogo />
 

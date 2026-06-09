@@ -16,7 +16,7 @@ async function verify() {
         } 
       }
     );
-    console.log(`✅ Force verified ${res.modifiedCount} users.`);
+    // console.log(`✅ Force verified ${res.modifiedCount} users.`);
     process.exit(0);
   } catch (err) {
     console.error(err);

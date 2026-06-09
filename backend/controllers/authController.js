@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import Otp from "../models/Otp.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
@@ -35,18 +36,19 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const verificationOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    const verificationOtpExpiresAt = Date.now() + 10 * 60 * 1000;
 
-    const user = await User.create({
+    // Remove any existing OTP record for this email
+    await Otp.deleteMany({ email });
+
+    const tempUser = await Otp.create({
       name,
       email,
       password: hashedPassword,
-      verificationOtp,
-      verificationOtpExpiresAt
+      otp: verificationOtp
     });
 
     await sendEmail(
-      user.email,
+      tempUser.email,
       "Verify your ReFitly email",
       `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #fcfbf9; padding: 30px; border-radius: 12px; border: 1px solid #eae5de;">
@@ -64,7 +66,7 @@ export const registerUser = async (req, res) => {
 
     res.status(201).json({
       message: "OTP sent to your email.",
-      email: user.email
+      email: tempUser.email
     });
 
   } catch (error) {
@@ -89,13 +91,13 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Validation failed", errors });
     }
 
-    console.log("Entered Email:", email);
-    console.log("Entered Password:", password);
+    // console.log("Entered Email:", email);
+    // console.log("Entered Password:", password);
 
     // 🔥 STEP 2: find user
     const user = await User.findOne({ email });
 
-    console.log("User found:", user);
+    // console.log("User found:", user);
 
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
@@ -104,7 +106,7 @@ export const loginUser = async (req, res) => {
     // 🔥 STEP 3: password compare (IMPORTANT)
     const isMatch = await bcrypt.compare(password, user.password);
 
-    console.log("Password match:", isMatch); // 👈 YE LINE ADD KARNI HAI
+    // console.log("Password match:", isMatch); // 
 
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
@@ -158,30 +160,26 @@ export const verifyOtp = async (req, res) => {
       return res.status(400).json({ message: "Validation failed", errors });
     }
 
-    const user = await User.findOne({ email });
+    const tempUser = await Otp.findOne({ email });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!tempUser) {
+      return res.status(404).json({ message: "Invalid or expired OTP. Please register again." });
     }
 
-    if (user.isVerified) {
-      return res.status(400).json({ message: "Email already verified" });
-    }
-
-    if (!user.verificationOtp || user.verificationOtp !== otp) {
+    if (tempUser.otp !== otp) {
       return res.status(400).json({ message: "Invalid OTP" });
     }
 
-    if (user.verificationOtpExpiresAt < Date.now()) {
-      return res.status(400).json({ message: "OTP has expired" });
-    }
+    // create the permanent user
+    await User.create({
+      name: tempUser.name,
+      email: tempUser.email,
+      password: tempUser.password,
+      isVerified: true
+    });
 
-    // verify user
-    user.isVerified = true;
-    user.verificationOtp = undefined;
-    user.verificationOtpExpiresAt = undefined;
-
-    await user.save();
+    // delete temporary user
+    await Otp.deleteOne({ email });
 
     res.status(200).json({ message: "Email verified successfully" });
   } catch (error) {
@@ -202,25 +200,27 @@ export const resendOtp = async (req, res) => {
       return res.status(400).json({ message: "Validation failed", errors });
     }
 
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    // check if already verified in main User collection
+    const existingUser = await User.findOne({ email });
+    if (existingUser && existingUser.isVerified) {
+      return res.status(400).json({ message: "Email is already verified. Please log in." });
     }
 
-    if (user.isVerified) {
-      return res.status(400).json({ message: "Email is already verified" });
+    const tempUser = await Otp.findOne({ email });
+
+    if (!tempUser) {
+      return res.status(404).json({ message: "Registration session expired. Please sign up again." });
     }
 
     const verificationOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    const verificationOtpExpiresAt = Date.now() + 10 * 60 * 1000;
 
-    user.verificationOtp = verificationOtp;
-    user.verificationOtpExpiresAt = verificationOtpExpiresAt;
-    await user.save();
+    tempUser.otp = verificationOtp;
+    // this will also reset the TTL because createdAt is updated on save or we can explicitly update it
+    tempUser.createdAt = Date.now();
+    await tempUser.save();
 
     await sendEmail(
-      user.email,
+      tempUser.email,
       "Your new ReFitly verification code",
       `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #fcfbf9; padding: 30px; border-radius: 12px; border: 1px solid #eae5de;">

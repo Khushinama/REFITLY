@@ -454,7 +454,7 @@ async function seed() {
     await User.insertMany(testUsers);
     await Wardrobe.insertMany(normalizedItems);
 
-    console.log('✅ Strategic test data seeded successfully');
+    // console.log('✅ Strategic test data seeded successfully');
     process.exit(0);
   } catch (err) {
     console.error('❌ Seeding failed:', err);
